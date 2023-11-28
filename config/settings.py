@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "graphene_django",
     "apps.users",
+    "apps.floaters",
+    "apps.tasks",
 ]
 
 MIDDLEWARE = [
@@ -145,5 +148,5 @@ CACHES = {
 }
 
 GRAPHENE = {
-    'SCHEMA': 'myproject.schema.schema', # Where your Graphene schema lives
+    'SCHEMA': 'config.schema.schema', 
 }
