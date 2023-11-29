@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "apps.floaters",
     "apps.tasks",
     "apps.referrals",
+    "apps.leaderboard",
 ]
 
 MIDDLEWARE = [
