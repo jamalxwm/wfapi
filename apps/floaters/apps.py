@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class FloatersConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "floaters"
+    name = "apps.floaters"
