@@ -25,6 +25,8 @@ factory-boy = "*"
 pillow = "*"
 pytest = "*"
 pytest-django = "*"
+faker = "*"
+pytest-mock = "*"
 
 [dev-packages]
 
