@@ -65,4 +65,15 @@ class Leaderboards:
     def _update_individual_rankings(self, user, new_rank):
         return self.conn.zadd('individual_rankings', {user: new_rank})
 
-    def create_new
+    def create_new_team(self, user1, user2):
+        team_id = f'{user1}_{user2}'
+        
+        score1 = self.conn.zscore('main_leaderboard', user1)
+        score2 = self.conn.zscore('main_leaderboard', user2)
+        
+        team_score = max(score1, score2) if score1 and score2 else score1 or score2
+        
+        self.conn.zrem('main_leaderboard', user1)
+        self.conn.zrem('main_leaderboard', user2)
+
+        return self.add_user(team_id, team_score)

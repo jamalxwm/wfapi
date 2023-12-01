@@ -123,7 +123,7 @@ class TestTeamLogic:
         yield conn
         conn.flushall()
 
-    @pytest.fixture
+    @pytest.fixture(scope='class', autouse=True)
     def users(self):
         fake = Faker()
         users = [fake.name() for _ in range(98)]
@@ -131,13 +131,28 @@ class TestTeamLogic:
         users.insert(50, 'team_member_B')
         return users
 
-    @pytest.fixture
+    @pytest.fixture(scope='class', autouse=True)
     def individual_leaderboard(self):
         return LeaderboardViews('individual_rankings')
 
-    @pytest.fixture
+    @pytest.fixture(scope='class', autouse=True)
     def main_leaderboard(self):
         return LeaderboardViews('main_leaderboard')
+
+    @pytest.fixture(scope='class', autouse=True)
+    def seed_db(self, users, main_leaderboard):
+        for index, name in enumerate(users):
+            main_leaderboard.add_user(name, index)
     
+    @pytest.mark.run(order=1)
     def test_should_create_with_highest_members_score(self, redis, main_leaderboard):
-        
+        score1 = redis.zscore('main_leaderboard', 'team_member_A')
+        score2 = redis.zscore('main_leaderboard', 'team_member_B')
+        main_leaderboard.create_new_team('team_member_A', 'team_member_B')
+
+        assert redis.zscore('main_leaderboard', 'team_member_A_team_member_B') == max(score1, score2)
+    
+    @pytest.mark.run(order=2)
+    def test_should_replace_team_members_with_team(self, redis, main_leaderboard):
+        assert redis.zrank('main_leaderboard', 'team_member_A') == None
+        assert redis.zrank('main_leaderboard', 'team_member_B') == None
