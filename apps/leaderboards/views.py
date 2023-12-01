@@ -9,6 +9,10 @@ class Leaderboards:
         Leaderboards.conn.zadd('leaderboard', {user: score})
 
     @staticmethod
+    def delete_user(user):
+        Leaderboards.conn.zrem('leaderboard', user)
+
+    @staticmethod
     def update_user_rank_by_spaces(user, spaces):
         current_score = Leaderboards.conn.zscore('leaderboard', user)
         current_rank = Leaderboards.get_user_rank(user) - 1

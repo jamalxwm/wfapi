@@ -46,3 +46,7 @@ class TestLeaderboard:
     
     def test_get_leaderboard_length(self):
         assert LeaderboardViews.get_leaderboard_length() == 10
+
+    def test_delete_user(self, redis):
+        LeaderboardViews.delete_user('static_user')
+        assert redis.zcard('leaderboard') == 9
