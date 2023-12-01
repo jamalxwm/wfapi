@@ -15,9 +15,22 @@ class Leaderboards:
         
         if current_rank is None:
             Leaderboards.add_user(user, 0)
+            Leaderboards.update_user_rank_by_spaces(user, spaces)
         
         target_rank = max(0, current_rank - spaces)
         return Leaderboards._move_user_to_rank(user, current_score, target_rank)
+    
+    @staticmethod
+    def get_user_rank(user):
+        return Leaderboards.conn.zrevrank('leaderboard', user) + 1
+    
+    @staticmethod
+    def get_leaderboard_length():
+        return Leaderboards.conn.zcard('leaderboard')
+    
+    @staticmethod
+    def _get_user_by_rank(rank):
+        return Leaderboards.conn.zrevrange('leaderboard', rank, rank, withscores=True)
     
     @staticmethod
     def _move_user_to_rank(user, current_score, target_rank):
@@ -31,17 +44,4 @@ class Leaderboards:
         Leaderboards.conn.zincrby('leaderboard', new_score, user)
 
         return f"Moved {user} to rank {target_rank + 1}"
-    
-    @staticmethod
-    def get_user_rank(user):
-        return Leaderboards.conn.zrevrank('leaderboard', user) + 1
-    
-    @staticmethod
-    def _get_user_by_rank(rank):
-        return Leaderboards.conn.zrevrange('leaderboard', rank, rank, withscores=True)
-    
-    @staticmethod
-    def print_leaderboard():
-        leaderboard = Leaderboards.conn.zrevrange('leaderboard', 0, -1, withscores=True)
-
-        print('Leaderboard:', leaderboard)
+   
