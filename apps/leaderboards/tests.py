@@ -25,9 +25,24 @@ class TestLeaderboard:
         LeaderboardViews.print_leaderboard()
         assert redis.zcard('leaderboard') == 10
 
-    def test_update_user_position(self, redis, users):
+    def test_user_position(self, redis):
+        position = LeaderboardViews.get_user_rank('static_user')
+        assert position - 1 == redis.zrevrank('leaderboard', 'static_user')
+
+    def test_update_user_position(self, redis):
         # Update user score and check if it's updated correctly
-        LeaderboardViews.update_user_position('static_user', 5)
+        start_position = LeaderboardViews.get_user_rank('static_user') - 1
+        spaces_to_move = 5
+        LeaderboardViews.update_user_rank_by_spaces('static_user', spaces_to_move)
 
         LeaderboardViews.print_leaderboard()
-        assert redis.zrevrank('leaderboard', 'static_user') == 6
+        assert redis.zrevrank('leaderboard', 'static_user') == start_position - spaces_to_move
+
+    def test_update_user_position_if_negative_space_jumps(self, redis):
+        # Update user score and check if it's updated correctly
+        # start_position = LeaderboardViews.get_user_rank('static_user') - 1
+        spaces_to_move = 5
+        LeaderboardViews.update_user_rank_by_spaces('static_user', spaces_to_move)
+
+        LeaderboardViews.print_leaderboard()
+        assert redis.zrevrank('leaderboard', 'static_user') == 0
