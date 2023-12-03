@@ -34,3 +34,26 @@ score = r.zscore('individual_scores', user1)
 
 # re-add the user to the main leaderboard with their individual score
 r.zadd('main_leaderboard', {user1: score})
+
+from django_redis import get_redis_connection
+
+
+
+
+
+
+
+class IndividualRankings:
+
+    def __init__(self, conn=None):
+        self.conn = conn if conn else get_redis_connection("default")
+
+    def _populate_individual_rankings(self, user, main_leaderboard):
+        user_rank_main = self.conn.zrevrank(main_leaderboard, user)
+        if user_rank_main is not None:
+            self.conn.hset('individual_rankings', user, user_rank_main)
+        else:
+            print(f"Rank for user {user} not found in main leaderboard.")
+
+    def _increment_individual_rankings_by_spaces(self, user, spaces):
+        return self.conn.hincrby('individual_rankings', user, -spaces)

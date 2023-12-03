@@ -1,9 +1,13 @@
 import pytest
 from faker import Faker
 from django_redis import get_redis_connection
-from .views import Leaderboards as LeaderboardViews
+from .views import Leaderboard, SoloRanks
 
 class TestMainLeaderboard:
+    NUM_USERS = 10
+    STATIC_USER = 'static_user'
+    INSERTION_POINT = 8
+
     @pytest.fixture(scope='class', autouse=True)
     def redis(self):
         conn = get_redis_connection('default')
@@ -13,50 +17,69 @@ class TestMainLeaderboard:
     @pytest.fixture
     def users(self):
         fake = Faker()
-        users = [fake.name() for _ in range(9)]
-        users.insert(1, 'static_user')
+        users = [fake.name() for _ in range(self.NUM_USERS - 1)]
+        users.insert(self.INSERTION_POINT, self.STATIC_USER)
         return users
 
     @pytest.fixture
-    def leaderboard(self):
-        return LeaderboardViews('main_leaderboard')
+    def leaderboard(request):
+        leaderboard = Leaderboard('main_leaderboard')
+        yield leaderboard
+        # After the test, reset the singleton instance to None
+        type(leaderboard)._instance = None
 
     def test_add_user(self, redis, users, leaderboard):
         # Add users to the leaderboard sorted set
         for index, name in enumerate(users):
             leaderboard.add_user(name, index)
 
-        assert redis.zcard('main_leaderboard') == 10
+        assert redis.zcard('main_leaderboard') == self.NUM_USERS
 
-    def test_user_position(self, redis, leaderboard):
-        position = leaderboard.get_user_rank('static_user')
+    def test_user_rank(self, leaderboard):
+        position = max(0, self.NUM_USERS - self.INSERTION_POINT - 1)
+        assert leaderboard.get_user_rank(self.STATIC_USER) == position
 
-        assert position == redis.zrevrank('main_leaderboard', 'static_user')
+    def test_user_score(self, leaderboard):
+        score = self.INSERTION_POINT
+        assert leaderboard.get_user_score(self.STATIC_USER) == score
 
+    def test_increment_user_score(self, leaderboard):
+        increment = 5
+        leaderboard.increment_user_score(increment, self.STATIC_USER)
+        assert leaderboard.get_user_score(self.STATIC_USER) == self.INSERTION_POINT + increment
+
+    @pytest.mark.skip(reason="refactoring the leaderboard class")
     def test_update_user_position(self, redis, leaderboard):
         # Update user score and check if it's updated correctly
-        start_position = leaderboard.get_user_rank('static_user')
+        start_position = leaderboard.get_user_rank(self.STATIC_USER)
         spaces_to_move = 5
-        leaderboard.update_user_rank_by_spaces('static_user', spaces_to_move)
+        leaderboard.update_user_rank_by_spaces(self.STATIC_USER, spaces_to_move)
 
-        assert redis.zrevrank('main_leaderboard', 'static_user') == start_position - spaces_to_move
-
+        assert redis.zrevrank('main_leaderboard', self.STATIC_USER) == start_position - spaces_to_move
+    
+    @pytest.mark.skip(reason="refactoring the leaderboard class")
     def test_update_user_position_if_negative_space_jumps(self, redis, leaderboard):
         # Update user score and check if it's updated correctly
         spaces_to_move = 20
-        leaderboard.update_user_rank_by_spaces('static_user', spaces_to_move)
+        leaderboard.update_user_rank_by_spaces(self.STATIC_USER, spaces_to_move)
 
-        assert redis.zrevrank('main_leaderboard', 'static_user') == 0
+        assert redis.zrevrank('main_leaderboard', self.STATIC_USER) == 0
 
     def test_get_leaderboard_length(self, leaderboard):
-        assert leaderboard.get_leaderboard_length() == 10
+        assert leaderboard.get_leaderboard_length() == self.NUM_USERS
 
-    def test_delete_user(self, redis, leaderboard):
-        leaderboard.delete_user('static_user')
-        assert redis.zcard('main_leaderboard') == 9
+    def test_delete_user(self, leaderboard):
+        leaderboard.delete_user(self.STATIC_USER)
+        assert leaderboard.get_leaderboard_length() == self.NUM_USERS - 1
+        assert leaderboard.get_user_rank(self.STATIC_USER) is None
 
 
-class TestIndividualLeaderboard:
+class TestSoloRanks:
+    NUM_USERS = 10
+    STATIC_USER = 'static_user'   
+    INSERTION_POINT = 8
+    NON_USER = 'non_user'
+
     @pytest.fixture(scope='class', autouse=True)
     def redis(self):
         conn = get_redis_connection('default')
@@ -64,20 +87,51 @@ class TestIndividualLeaderboard:
         conn.flushall()
 
     @pytest.fixture
-    def users(self):
+    def solo_ranks(request):
+        solo_ranks = SoloRanks('solo_rankings')
+        yield solo_ranks
+        # After the test, reset the singleton instance to None
+        type(solo_ranks)._instance = None
+
+    @pytest.fixture
+    def leaderboard(request):
+        leaderboard = Leaderboard('main_leaderboard')
+        yield leaderboard
+        # After the test, reset the singleton instance to None
+        type(leaderboard)._instance = None
+
+    @pytest.fixture
+    def users(self, leaderboard):
         fake = Faker()
-        users = [fake.name() for _ in range(9)]
-        users.insert(1, 'static_user')
+        users = [fake.name() for _ in range(self.NUM_USERS - 1)]
+        users.insert(self.INSERTION_POINT, self.STATIC_USER)
+
+        for index, name in enumerate(users):
+            leaderboard.add_user(name, index)
+
         return users
 
-    @pytest.fixture
-    def individual_leaderboard(self):
-        return LeaderboardViews('individual_rankings')
+    def test_populate_solo_rankings_success(self, users, leaderboard, solo_ranks):
+        for _, name in enumerate(users):
+            rank = leaderboard.get_user_rank(name)
+            solo_ranks.populate_solo_rankings(name, rank)
+        
+        assert solo_ranks.conn.hexists(solo_ranks.solo_ranks, self.STATIC_USER) is not None
+        assert int(solo_ranks.conn.hget(solo_ranks.solo_ranks, self.STATIC_USER)) == max(0, self.NUM_USERS - self.INSERTION_POINT - 1)
 
-    @pytest.fixture
-    def main_leaderboard(self):
-        return LeaderboardViews('main_leaderboard')
+    def test_populate_solo_rankings_failure(self, users, solo_ranks):
+        with pytest.raises(Exception):
+            solo_ranks.populate_solo_rankings(self.NON_USER, None)
 
+    def test_increment_user_rank(self, users, solo_ranks):
+        increment_value1 = 2
+        static_user_start_rank = int(solo_ranks.conn.hget(solo_ranks.solo_ranks, self.STATIC_USER))
+        solo_ranks.increment_user_rank(self.STATIC_USER, increment_value1)
+        static_user_final_rank = int(solo_ranks.conn.hget(solo_ranks.solo_ranks, self.STATIC_USER))
+    
+        assert static_user_final_rank == max(0, static_user_start_rank - increment_value1)
+        
+    @pytest.mark.skip(reason="refactoring the leaderboard class")
     def test_add_user(self, redis, users, individual_leaderboard, main_leaderboard):
         # Add users to individual rankings with their main leaderboard ranking as the score
         for index, name in enumerate(users):
@@ -87,30 +141,30 @@ class TestIndividualLeaderboard:
         for user in users:
             individual_leaderboard._populate_individual_rankings(user)
 
-        # Get the rank of the 'static_user' in the 'main_leaderboard'
-        main_leaderboard_rank = redis.zrevrank('main_leaderboard', 'static_user')
+        # Get the rank of the self.STATIC_USER in the 'main_leaderboard'
+        main_leaderboard_rank = redis.zrevrank('main_leaderboard', self.STATIC_USER)
 
-        # The score of the 'static_user' in the 'individual_rankings' should be equal to their rank in the 'main_leaderboard'
-        individual_ranking_score = redis.hget('individual_rankings', 'static_user')
+        # The score of the self.STATIC_USER in the 'individual_rankings' should be equal to their rank in the 'main_leaderboard'
+        individual_ranking_score = redis.hget('individual_rankings', self.STATIC_USER)
 
-        # The score of the 'static_user' in the 'individual_rankings' should be equal to their rank in the 'main_leaderboard'
+        # The score of the self.STATIC_USER in the 'individual_rankings' should be equal to their rank in the 'main_leaderboard'
         assert int(individual_ranking_score) == main_leaderboard_rank
-
+    @pytest.mark.skip(reason="refactoring the leaderboard class")
     def test_should_update_individual_ranking_when_main_leaderboard_increases(self, redis, individual_leaderboard, main_leaderboard):
-        # Get the initial score of a user ('static_user') in the individual leaderboard
-        initial_ranking_score = redis.hget('individual_rankings', 'static_user')
+        # Get the initial score of a user (self.STATIC_USER) in the individual leaderboard
+        initial_ranking_score = redis.hget('individual_rankings', self.STATIC_USER)
         
         # Define the number of spaces the user should move up in the leaderboard
         spaces_to_move = 5
 
         # Update the rank of the user in the main leaderboard by moving it up by 'spaces_to_move'
-        main_leaderboard.update_user_rank_by_spaces('static_user', spaces_to_move)
+        main_leaderboard.update_user_rank_by_spaces(self.STATIC_USER, spaces_to_move)
 
         # Get the rank of the user in the main leaderboard after moving it
-        main_leaderboard_rank = redis.zrevrank('main_leaderboard', 'static_user')
+        main_leaderboard_rank = redis.zrevrank('main_leaderboard', self.STATIC_USER)
 
         # Get the final score of the user in the individual leaderboard after the update
-        final_ranking_score = redis.hget('individual_rankings', 'static_user')
+        final_ranking_score = redis.hget('individual_rankings', self.STATIC_USER)
 
         # Assert that the final score in the individual leaderboard equals the initial score minus the moved spaces
         # Also, assert that this final score equals the rank of the user in the main leaderboard

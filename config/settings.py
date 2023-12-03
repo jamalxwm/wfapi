@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "apps.tasks",
     "apps.referrals",
     "apps.leaderboards",
+    "apps.teams",
     "django_rename_app",
 ]
 
