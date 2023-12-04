@@ -12,7 +12,6 @@ class Leaderboard:
         self.leaderboard = leaderboard
         self.conn = conn if conn else get_redis_connection("default")
     
-    
     def add_user(self, user, score):
         # Add the user to the main leaderboard
         self.conn.zadd(self.leaderboard, {user: score})
@@ -20,8 +19,8 @@ class Leaderboard:
     def delete_user(self, user):
         self.conn.zrem(self.leaderboard, user)
 
-    def get_user_rank(self, user):
-        rank = self.conn.zrevrank(self.leaderboard, user)
+    def get_user_rank(self, user, withscores=False):
+        rank = self.conn.zrevrank(self.leaderboard, user, withscores)
         return rank if rank is not None else None
     
     def get_user_score(self, user):
