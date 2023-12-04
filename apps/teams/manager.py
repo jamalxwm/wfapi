@@ -16,6 +16,7 @@ class TeamsManager:
         self.conn = conn if conn else get_redis_connection("default")
         self.teamuser = teamuser
         self.teams = teams
+        self.MAX_TEAM_SIZE = 2
 
     def setup_team(self, users):
         self.check_users_not_teamed(users)
@@ -50,7 +51,7 @@ class TeamsManager:
             raise Exception('User already in a team')
 
     def check_team_is_duo(self, users):
-        if len(users) != 2:
+        if len(users) != self.MAX_TEAM_SIZE:
             raise Exception('Teams must be two users')
         
     def disband_team(self, initiator):
