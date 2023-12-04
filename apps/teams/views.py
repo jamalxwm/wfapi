@@ -1,6 +1,6 @@
 from django_redis import get_redis_connection
-from leaderboards.views import Leaderboard as lb
-from leaderboards.manager import RankingManager
+from apps.leaderboard.views import Leaderboard as lb
+from apps.leaderboard.manager import RankingManager
 
 class Teams:
     def __init__(self, teams, conn=None):
@@ -19,11 +19,11 @@ class Teams:
         return members
 
 class TeamUser:
-    def __init__(self, user_id, teams, lb, ranking_manager conn=None):
+    def __init__(self, user_id, teams, lb, ranking_manager, conn=None):
         self.teams = teams
         self.user = user_id
         self.conn = conn if conn else get_redis_connection("default")
-        self.ld = lb
+        self.lb = lb
         self.rm = ranking_manager
 
     def is_user_teamed(self):
@@ -35,19 +35,21 @@ class TeamUser:
 
     def initialize_user_fallbacks(self):
         rank, score = self.get_user_lb_rank_score(self.user)
-        mappings = { team_id: None,
-                        fallback_rank: rank,
-                        fallback_score: score, }
+        mappings = { 
+                     "team_id": "",
+                     "fallback_rank": rank,
+                     "fallback_score": score, 
+                     }
         return mappings
 
     def update_user_fallbacks(self, score, spaces):
-        rank, score = self.get_user_fallback_values(self.user)
+        rank, _ = self.get_user_fallback_values(self.user)
         if rank - spaces < 0:
             spaces = rank
-        self.conn.hincrby(self.teams, f'{self.user}:fallback_rank', -spaces)
-        self.conn.hincrbyfloat(self.teams, f'{self.user}:fallback_score', score)
+        self.conn.hincrby(self.teams, f'{self.user}:fallback_rank, {-spaces}')
+        self.conn.hincrbyfloat(self.teams, f'{self.user}:fallback_score, {score}')
 
-    def restore_user_to_lb_rank(self, score, rank):
+    def restore_user_to_lb_rank(self):
         # Restore user to their fallback rank
         rank, score = self.get_user_fallback_values(self.user)
         self.rm._move_user_to_rank(self.user, score, rank, skip_value=0)

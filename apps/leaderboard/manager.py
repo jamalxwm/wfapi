@@ -1,5 +1,5 @@
-from .views import Leaderboard, SoloRanks
-from teams.views import teams
+from .views import Leaderboard
+#from apps.teams.views import Teams
 
 class RankingManager:
     def __init__(self, leaderboard, teams, solo_ranks):
