@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from .views import TeamUser
+from .views import TeamUser, Teams
 from apps.leaderboard.views import Leaderboard
 
 class TestTeamUser(unittest.TestCase):
@@ -113,21 +113,42 @@ class TestTeamUser(unittest.TestCase):
 
 
 class TeamsTestCase(unittest.TestCase):
+    
     def setUp(self):
-        self.mock_get_redis_connection = patch('your_module.get_redis_connection').start()  # replace with the actual module
-        self.mock_redis = MagicMock()
-        self.mock_get_redis_connection.return_value = self.mock_redis
-        self.teams_list = ['userA', 'userB']
-        self.teams = Teams(self.teams_list, conn=self.mock_redis)
+        self.conn = MagicMock()
+        self.teams_dict = {'userA': {'team_id': 'userA_userB,'}}
+        self.teams = Teams(self.teams_dict, conn=self.conn)
 
     def tearDown(self):
         patch.stopall()
-
+    
     def test_init(self):
-        self.assertEqual(self.teams.teams, self.teams_list)
-        self.mock_get_redis_connection.assert_called_once_with('default')
-        self.assertEqual(self.teams.conn, self.mock_redis)  
+        teams = Teams(self.teams_dict)
 
-    def test_t
+    def test_get_team_id(self):
+        self.conn.hget.return_value = 'userA_userB'
+        user = 'userA'
+
+        result = self.teams.get_team_id(user)
+
+        self.conn.hget.assert_called_once_with(self.teams_dict, 'userA:team_id')
+        self.assertEqual(result, 'userA_userB')
+
+
+    def test_create_team_id(self):
+        result = self.teams.create_team_id('userA', 'userB')
+
+        self.assertEqual(result, 'userA_userB')
+    
+    @patch.object(Teams, 'get_team_id')
+    def test_get_team_members(self, mock_get_team_id):
+        mock_get_team_id.return_value = 'userA_userB'
+        user = 'userA'
+        result = self.teams.get_team_members(user)
+        self.teams.get_team_id.assert_called_once_with(user)
+
+        assert result == ['userA', 'userB']
+
+
 if __name__ == "__main__":
     unittest.main()
