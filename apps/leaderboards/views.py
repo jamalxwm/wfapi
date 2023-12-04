@@ -56,11 +56,14 @@ class SoloRanks:
             raise Exception(f"Rank for user {solo_user} not found in main leaderboard.")
 
     def increment_user_rank(self, solo_user, spaces):
-        current_rank = int(self.conn.hget(self.solo_ranks, solo_user))
+        current_rank = self.get_user_solo_rank(solo_user)
         if current_rank - spaces < 0:
             spaces = current_rank
-            
+
         return self.conn.hincrby(self.solo_ranks, solo_user, -spaces)
+
+    def get_user_solo_rank(self, solo_user):
+        return int(self.conn.hget(self.solo_ranks, solo_user))
 
 
 
