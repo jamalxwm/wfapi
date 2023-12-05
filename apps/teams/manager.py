@@ -27,11 +27,11 @@ class TeamsManager:
         # Initialise the team with the highest user's score
         team_start_score = max(userA_score, userB_score)
         
-        self.create_new_team(user_mappings, team_id, users, team_start_score) 
+        self._create_new_team(user_mappings, team_id, users, team_start_score) 
     
     def _create_new_team(self, user_mappings, team_id, users, team_score):
       # Add team members to hashset with initial fallback values
-        self.teams.add_team_members_to_hashset(user_mappings):
+        self.teams.add_team_members_to_hashset(user_mappings)
         
         # Remove the team members from the leaderboard
         for team_user in users:

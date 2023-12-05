@@ -118,7 +118,7 @@ class TeamsTestCase(unittest.TestCase):
         self.conn = MagicMock()
         self.lb = MagicMock()
         self.teams_dict = {'userA': {'team_id': 'userA_userB,'}}
-        self.teams = Teams(self.teams_dict, lb=self.lb, conn=self.conn)
+        self.teams = Teams(lb=self.lb, conn=self.conn)
 
     def tearDown(self):
         patch.stopall()
@@ -132,7 +132,7 @@ class TeamsTestCase(unittest.TestCase):
 
         result = self.teams.get_team_id(user)
 
-        self.conn.hget.assert_called_once_with(self.teams_dict, 'userA:team_id')
+        self.conn.hget.assert_called_once_with('teams_hashset', f'{user}:team_id')
         self.assertEqual(result, 'userA_userB')
 
 
@@ -150,18 +150,44 @@ class TeamsTestCase(unittest.TestCase):
 
         assert result == ['userA', 'userB']
 
-def TestTeamsManagerCase(unittest.TestCase):
+class TestTeamsManagerCase(unittest.TestCase):
     def setUp(self):
         self.conn = MagicMock()
-        self.teams = teams
-        self.teamuser = teamuser
-        #self.MAX_TEAM_SIZE = 2
+        self.teams = MagicMock()
+        self.teamuser = MagicMock()
+        self.users = ['user1', 'user2']
         self.teamsmanager = TeamsManager(
             teams=self.teams,
-            teamuser=self.teamuser
+            teamuser=self.teamuser,
             conn=self.conn
         )
 
-    def test_validate_team
+    def test_validate_team_members(self):
+        self.teamuser.is_user_teamed.return_value = False
+        self.teams.create_team_id.return_value = 'team1'
+        
+        users, team_id = self.teamsmanager.validate_team_members(self.users)
+        
+        self.assertEqual(users, self.users)
+        self.assertEqual(team_id, 'team1')
+        self.teams.create_team_id.assert_called_once_with(*self.users)
+
+    def test_check_users_not_teamed_exception(self):
+        self.teamuser.is_user_teamed.return_value = True
+        
+        with self.assertRaises(Exception) as context:
+            self.teamsmanager.validate_team_members(self.users)
+        
+        self.assertTrue('User already in a team' in str(context.exception))
+
+    def test_check_team_is_duo_exception(self):
+        self.teamuser.is_user_teamed.return_value = False
+        users = ['user1', 'user2', 'user3']
+        
+        with self.assertRaises(Exception) as context:
+            self.teamsmanager.validate_team_members(users)
+        
+        self.assertTrue('Teams must be two users' in str(context.exception))
+
 if __name__ == "__main__":
     unittest.main()
