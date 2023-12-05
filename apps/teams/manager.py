@@ -1,28 +1,21 @@
 from django_redis import get_redis_connection
-from leaderboards.views import Leaderboard as lb
-from leaderboards.manager import RankingManager
+from .views import Teams, TeamUser
 
 class TeamsManager:
-    _instance = None
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(Teams, cls).__new__(cls)
-        return cls._instance
-
-    def __init__(self, teams, lb, teamuser, conn=None):
+    def __init__(self, teams, teamuser, conn=None):
         self.teams = teams
-        self.lb = lb
         self.conn = conn if conn else get_redis_connection("default")
         self.teamuser = teamuser
-        self.teams = teams
         self.MAX_TEAM_SIZE = 2
 
-    def setup_team(self, users):
+    def validate_team_members(self, users):
         self.check_users_not_teamed(users)
         self.check_team_is_duo(users)
         team_id = self.teams.create_team_id(*users)
-
+        return users, team_id
+    
+    def setup_team(self, users, team_id):
         user_mappings = []
         # Get both users score and ranks
         for user in users:
@@ -30,21 +23,21 @@ class TeamsManager:
             initial_fallback_values[user].team_id = team_id
             user_mappings.append({user: initial_fallback_values})
         
+        userA_score, userB_score = user_mappings[users[0]].fallback_score, user_mappings[users[1]].fallback_score
         # Initialise the team with the highest user's score
-        team_start_score = max(user_mappings[users[0]].fallback_score, user_mappings[users[1]].fallback_score)
+        team_start_score = max(userA_score, userB_score)
         
-        self.create_new_team(user_mappings, team_id, users, team_start_score)
+        self.create_new_team(user_mappings, team_id, users, team_start_score) 
     
-    
-    def create_new_team(self, user_mappings, team_id, users, team_score):
+    def _create_new_team(self, user_mappings, team_id, users, team_score):
       # Add team members to hashset with initial fallback values
-        for mapping in user_mappings:
-            self.conn.hset(self.teams, mapping)
+        self.teams.add_team_members_to_hashset(user_mappings):
         
         # Remove the team members from the leaderboard
-        self.lb.delete_user(*users)
+        for team_user in users:
+            self.teamuser.remove_team_user_from_lb(team_user)
         # Add the team to the leaderboard
-        self.lb.add_user(team_id, team_score)
+        self.teams.add_new_team_to_lb(team_id, team_score)
 
     def check_users_not_teamed(self, users):
         if any(self.teamuser.is_user_teamed(user) for user in [users]):
@@ -55,7 +48,7 @@ class TeamsManager:
             raise Exception('Teams must be two users')
         
     def disband_team(self, initiator):
-        team_id = self.get_team_id(initiator)
+        team_id = self.teams.get_team_id(initiator)
         users = team_id.split('_')
         # Get the users fallback value and use one of the two methods to restor them to the leaderboard
         for user in users:
@@ -66,6 +59,6 @@ class TeamsManager:
     
     def delete_team(self, team, users):
         #remove the team members from the hash set
-        self.conn.hdel(self.teams, *users)
+        self.teams.remove_team_members_from_hashset(*users)
         # Remove the team from the leadeboard
-        self.lb.delete_user(team)
+        self.teams.remove_team_from_lb(team)

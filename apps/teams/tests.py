@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from .views import TeamUser, Teams
-from apps.leaderboard.views import Leaderboard
+from .manager import TeamsManager
 
-class TestTeamUser(unittest.TestCase):
+class TestTeamUserCase(unittest.TestCase):
     def setUp(self):
         self.conn = MagicMock()
         self.lb = MagicMock()
@@ -116,8 +116,9 @@ class TeamsTestCase(unittest.TestCase):
     
     def setUp(self):
         self.conn = MagicMock()
+        self.lb = MagicMock()
         self.teams_dict = {'userA': {'team_id': 'userA_userB,'}}
-        self.teams = Teams(self.teams_dict, conn=self.conn)
+        self.teams = Teams(self.teams_dict, lb=self.lb, conn=self.conn)
 
     def tearDown(self):
         patch.stopall()
@@ -149,6 +150,18 @@ class TeamsTestCase(unittest.TestCase):
 
         assert result == ['userA', 'userB']
 
+def TestTeamsManagerCase(unittest.TestCase):
+    def setUp(self):
+        self.conn = MagicMock()
+        self.teams = teams
+        self.teamuser = teamuser
+        #self.MAX_TEAM_SIZE = 2
+        self.teamsmanager = TeamsManager(
+            teams=self.teams,
+            teamuser=self.teamuser
+            conn=self.conn
+        )
 
+    def test_validate_team
 if __name__ == "__main__":
     unittest.main()
