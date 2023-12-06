@@ -8,8 +8,8 @@ class Leaderboard:
             cls._instance = super(Leaderboard, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, leaderboard, conn=None):
-        self.leaderboard = leaderboard
+    def __init__(self, conn=None):
+        self.leaderboard = 'main_leaderboard'
         self.conn = conn if conn else get_redis_connection("default")
     
     def add_user(self, user, score):

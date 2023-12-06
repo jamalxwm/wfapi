@@ -1,17 +1,16 @@
 from django_redis import get_redis_connection
 from .views import Teams, TeamUser
-
 class TeamsManager:
 
     def __init__(self, teams, teamuser, conn=None):
         self.teams = teams
-        self.conn = conn if conn else get_redis_connection("default")
         self.teamuser = teamuser
+        self.conn = conn if conn else get_redis_connection("default")
         self.MAX_TEAM_SIZE = 2
 
     def validate_team_members(self, users):
-        self.check_users_not_teamed(users)
-        self.check_team_is_duo(users)
+        self._check_users_not_teamed(users)
+        self._check_team_is_pair(users)
         team_id = self.teams.create_team_id(*users)
         return users, team_id
     
@@ -38,14 +37,6 @@ class TeamsManager:
             self.teamuser.remove_team_user_from_lb(team_user)
         # Add the team to the leaderboard
         self.teams.add_new_team_to_lb(team_id, team_score)
-
-    def check_users_not_teamed(self, users):
-        if any(self.teamuser.is_user_teamed(user) for user in [users]):
-            raise Exception('User already in a team')
-
-    def check_team_is_duo(self, users):
-        if len(users) != self.MAX_TEAM_SIZE:
-            raise Exception('Teams must be two users')
         
     def disband_team(self, initiator):
         team_id = self.teams.get_team_id(initiator)
@@ -62,3 +53,11 @@ class TeamsManager:
         self.teams.remove_team_members_from_hashset(*users)
         # Remove the team from the leadeboard
         self.teams.remove_team_from_lb(team)
+
+    def _check_users_not_teamed(self, users):
+        if any(self.teamuser.is_user_teamed(user) for user in [users]):
+            raise Exception('User already in a team')
+
+    def _check_team_is_pair(self, users):
+        if len(users) != self.MAX_TEAM_SIZE:
+            raise Exception('Teams must be two users')

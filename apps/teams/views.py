@@ -76,7 +76,7 @@ class TeamUser:
     def restore_user_to_lb_rank(self):
         # Restore user to their fallback rank
         rank, score = self.get_user_fallback_values(self.user)
-        self.rm._move_user_to_rank(self.user, score, rank, skip_value=0)
+        self.rm._move_user_to_rank(self.user, score, rank, is_restore=True)
     
     def restore_user_to_lb_score(self):
         # Restore user to their fallback score
