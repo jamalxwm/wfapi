@@ -1,5 +1,5 @@
 from django_redis import get_redis_connection
-from .views import Teams, TeamUser
+from .models import Teams, TeamUser
 class TeamsManager:
 
     def __init__(self, teams, teamuser, conn=None):
