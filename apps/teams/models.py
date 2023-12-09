@@ -1,7 +1,7 @@
-from django.db import models
-from django_redis import get_redis_connection
-from apps.leaderboard.models import Leaderboard as lb
-from apps.leaderboard.manager import RankingManager
+# from django.db import models
+# from django_redis import get_redis_connection
+# from apps.leaderboard.models import Leaderboard as lb
+# from apps.leaderboard.manager import RankingManager
 
 class Teams:
     _instance = None

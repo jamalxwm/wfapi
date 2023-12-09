@@ -61,3 +61,7 @@ class TeamsManager:
     def _check_team_is_pair(self, users):
         if len(users) != self.MAX_TEAM_SIZE:
             raise Exception('Teams must be two users')
+    
+    @classmethod
+    def load_teams(cls):
+        pass

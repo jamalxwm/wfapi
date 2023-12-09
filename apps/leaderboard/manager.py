@@ -1,46 +1,48 @@
 from .models import Leaderboard
-# from apps.teams.models import Teams, TeamUser
+from apps.teams.manager import TeamsManager
+
 
 class RankingManager:
-    def __init__(self, leaderboard, teams):
-        self.leaderboard = Leaderboard(leaderboard)
-        self.teams = teams
-        
+    def __init__(self, leaderboard, teams_manager):
+        self.leaderboard = leaderboard
+        self.teams = teams_manager.load_teams()
 
     def update_user_rank_by_spaces(self, initiator, spaces):
-        user = initiator.team_id if initiator.team_id else initiator.user_id
+        player_id = initiator.team_id if initiator.team_id else initiator.user_id
+        
+        # Use leaderboard as source of truth for ranks and scores
+        current_score = self.leaderboard.get_player_score(player_id)
+        current_rank = self.leaderboard.get_player_rank(player_id)
 
-        if is_team:
-            user = self.teams.get_team_id(initiator)
-  
-        current_score = initiator.score
-        current_rank = initiator.rank
-
-        if current_rank is None and not is_team:
-            self.leaderboard.add_user(user, 0)
-            self.update_user_rank_by_spaces(user, spaces)
+        if current_rank is None and not initiator.team_id:
+            self.leaderboard.add_player(player_id, initiator.score)
+            self.update_user_rank_by_spaces(initiator, spaces)
             return
 
         target_rank = max(0, current_rank - spaces)
 
-        initiator.rank -= spaces
-        return self._move_user_to_rank(user, current_score, target_rank)
-
-    def _move_user_to_rank(self, user, current_score, target_rank, is_restore=False):
-       
-
-        incr_value = self._calculate_increment_value(is_restore, target_score, current_score)
-        self.leaderboard.increment_user_score(incr_value, user)
-
-        return f"Moved {user} to rank {target_rank + 1}"
-
-    def _calculate_increment_value(self, is_restore, target_score, current_score):
-        if is_restore:
-            incr_value = target_score
-        else:
-            incr_value = target_score - current_score + 0.01
+        new_score = self._calculate_points_to_rank(target_rank)
         
-        return incr_value
+        if new_score is None:
+            new_score = current_score + 1
 
-    
-       
+        self._update_players_instance_values(initiator, spaces, target_rank, new_score)
+        self._update_players_leaderboard_score(player_id, new_score)
+
+    def _update_players_leaderboard_score(self, player_id, new_score):
+        self.leaderboard.update_player_score(player_id, new_score)
+
+    def _calculate_points_to_rank(self, target_rank):
+        target_score = self.leaderboard.get_score_at_rank(target_rank)
+
+        return target_score + 0.01 if target_score else None
+
+    def _update_players_instance_values(self, initiator, spaces, target_rank, new_score):
+        rank_update = {"rank": target_rank, "spaces": spaces}
+        initiator.rank = rank_update
+        initiator.score = new_score
+
+        if initiator.team_id:
+            team = self.teams[initiator.team_id]
+            team.rank = target_rank
+            team.score = new_score

@@ -1,13 +1,13 @@
 import pytest
 from faker import Faker
 from django_redis import get_redis_connection
-from apps.leaderboard.models import Leaderboard
-from app.leaderboard.manager import RankingManager
+from apps.leaderboard.models import Leaderboard, Player
 
-class TestLeaderboardRankingManager:
-    NUM_USERS = 100
+
+class TestLeaderboard:
+    NUM_USERS = 10
     STATIC_USER = 'static_user'
-    INSERTION_POINT = 8
+    INSERTION_POINT = 9
 
     @pytest.fixture(scope='class', autouse=True)
     def redis(self):
@@ -15,22 +15,27 @@ class TestLeaderboardRankingManager:
         yield conn
         conn.flushdb()
 
-    @pytest.fixture(scope='class', autouse=True)
+    @pytest.fixture
     def users(self):
         fake = Faker()
         users = [fake.name() for _ in range(self.NUM_USERS - 1)]
         users.insert(self.INSERTION_POINT, self.STATIC_USER)
         return users
 
-    @pytest.fixture(scope='class', autouse=True)
-    def leaderboard(self, users):
+    @pytest.fixture
+    def leaderboard(request):
         leaderboard = Leaderboard()
-        for index, name in enumerate(users):
-            self.leaderboard.add_user(index, name)
         yield leaderboard
         # After the test, reset the singleton instance to None
         type(leaderboard)._instance = None
+     
+    def test_add_player(self, redis, users, leaderboard):
+        # Add users to the leaderboard sorted set
+        for index, name in enumerate(users):
+            user = Player(name)
+            user_id = user.user_id
+            leaderboard.add_player(user_id, index)
 
-    def test_ranking_mgr_lb_interaction(self, redis):
-        score = redis.zscore(self.leaderboard, 'static_user')
-        print(f'STATIC USER SCORE is {score}')
+        assert redis.zcard('leaderboard') == self.NUM_USERS
+
+    def test_get_user_rank(self)
