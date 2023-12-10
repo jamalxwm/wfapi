@@ -8,13 +8,13 @@ class RankingManager:
         self.teams = teams_manager.load_teams()
 
     def update_user_rank_by_spaces(self, initiator, spaces):
-        player_id = initiator.team_id if initiator.team_id else initiator.user_id
+        player_id = initiator.team_id if initiator.team else initiator.user_id
         
         # Use leaderboard as source of truth for ranks and scores
         current_score = self.leaderboard.get_player_score(player_id)
         current_rank = self.leaderboard.get_player_rank(player_id)
 
-        if current_rank is None and not initiator.team_id:
+        if current_rank is None and not initiator.team:
             self.leaderboard.add_player(player_id, initiator.score)
             self.update_user_rank_by_spaces(initiator, spaces)
             return
@@ -42,7 +42,7 @@ class RankingManager:
         initiator.rank = rank_update
         initiator.score = new_score
 
-        if initiator.team_id:
-            team = self.teams[initiator.team_id]
+        if initiator.team:
+            team = initiator.team
             team.rank = target_rank
             team.score = new_score

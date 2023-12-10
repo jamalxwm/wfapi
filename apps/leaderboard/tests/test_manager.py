@@ -91,10 +91,7 @@ class TestRankingManager(unittest.TestCase):
         self.ranking_manager._update_players_leaderboard_score.assert_called_once_with(
             initiator.user_id, expected_new_score
         )
-        
-        # Add more assertions as needed to confirm that the rank and score are updated correctly
 
-    # Add more test methods to cover different cases like team updates, edge cases, etc.
     def tearDown(self):
         self.mock_update_player_score.reset_mock()
 
@@ -128,7 +125,6 @@ class TestRankingManager(unittest.TestCase):
         self.ranking_manager._update_players_leaderboard_score.assert_called_once_with(
             initiator.team_id, expected_new_score
         )
-
 
 
 if __name__ == "__main__":

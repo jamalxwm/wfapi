@@ -49,7 +49,6 @@ class Leaderboard:
         return score if score else None
 
     def update_player_score(self, player_id, new_score):
-        print('HELLO')
         self.conn.zadd(self.leaderboard, {player_id: new_score}, xx=True)
 
     
@@ -58,8 +57,7 @@ class Player:
         self.user_id = user_id
         self._score = 0.0
         self._rank = 0
-        self._team_id = None
-        self._teammate_id = None
+        self._team = None
 
     @property
     def score(self):
@@ -67,7 +65,7 @@ class Player:
 
     @score.setter  
     def score(self, score):
-        if self._team_id:
+        if self._team:
             return
         else:
             self._score = score
@@ -78,35 +76,33 @@ class Player:
     
     @rank.setter
     def rank(self, rank_update):
-        if self._team_id:
+        if self._team:
             self._rank = max(0, self._rank - rank_update['spaces']) 
         else:
             self._rank = max(0, rank_update['rank'])
 
     @property
     def team_id(self):
-        return self._team_id
+        return self.team._team_id if self._team else None
 
     @property
     def teammate_id(self):
-        return self._teammate_id
+        if not self._team:
+            return None
+        for member in self._team.members:
+            if member.user_id != self.user_id:
+                return member.user_id
 
-    def join_team(self, team_id, teammate_id):
-        if self.team_id and self.teammate_id:
+
+    def join_team(self, team):
+        if self.team:
             raise Exception('This player is already on a team') 
 
-        if bool(self.team_id) ^ bool(self.teammate_id):
-            raise Exception('Unknown error. Please contact admin') 
-
-        self._team_id = team_id
-        self._teammate_id = teammate_id
+        self._team = team
     
-    def leave_team(self):
-        if not self.team_id and not self.teammate_id:
+    def leave_team(self, score):
+        if self._team:
+            self._score = score
+            self.team = None
+        else:
             raise Exception('This player is not on a team')
-
-        if bool(self.team_id) ^ bool(self.teammate_id):
-            raise Exception('Unknown error. Please contact admin') 
-
-        self._team_id = None
-        self._teammate_id = None
