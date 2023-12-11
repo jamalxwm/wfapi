@@ -1,11 +1,8 @@
 from .models import Leaderboard
-from apps.teams.manager import TeamsManager
-
 
 class RankingManager:
-    def __init__(self, leaderboard, teams_manager):
+    def __init__(self, leaderboard):
         self.leaderboard = leaderboard
-        self.teams = teams_manager.load_teams()
 
     def update_user_rank_by_spaces(self, initiator, spaces):
         player_id = initiator.team_id if initiator.team else initiator.user_id

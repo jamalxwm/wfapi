@@ -5,55 +5,46 @@ from apps.leaderboard.models import Leaderboard
 
 
 class TestRankingManager(unittest.TestCase):
+    
     def setUp(self):
-        # Mock the Leaderboard and TeamsManager
+        self.mock_get_redis_connection = patch('apps.leaderboard.models.get_redis_connection')
+        self.mock_redis_conn = self.mock_get_redis_connection.start()
+        self.mock_redis_instance = MagicMock()
+        self.mock_redis_conn.return_value = self.mock_redis_instance
         self.mock_leaderboard = Leaderboard()
-        self.mock_teams_manager = MagicMock()
 
-        mock_team = MagicMock()
-        mock_team.rank = 75
-        mock_team.score = 100
-
-        self.mock_teams_manager.load_teams.return_value = {456: mock_team}
         self.update_player_score_patch = patch.object(
             self.mock_leaderboard, "update_player_score"
         )
 
-        
         # Patch the Leaderboard and TeamsManager
-        teams_manager_patch = patch(
-            "apps.teams.manager.TeamsManager", self.mock_teams_manager
-        )
+
         self.mock_update_player_score = self.update_player_score_patch.start()
         self.addCleanup(self.update_player_score_patch.stop)
         # Start patching
-        self.addCleanup(teams_manager_patch.stop)
-        teams_manager_patch.start()
 
         # Patch the 'get_player_score' method
         self.get_player_score_patch = patch.object(
-            self.mock_leaderboard, 'get_player_score', autospec=True
+            self.mock_leaderboard, "get_player_score", autospec=True
         )
         self.mock_get_player_score = self.get_player_score_patch.start()
         self.addCleanup(self.get_player_score_patch.stop)
 
         # Patch the 'get_player_rank' method
         self.get_player_rank_patch = patch.object(
-            self.mock_leaderboard, 'get_player_rank', autospec=True
+            self.mock_leaderboard, "get_player_rank", autospec=True
         )
         self.mock_get_player_rank = self.get_player_rank_patch.start()
         self.addCleanup(self.get_player_rank_patch.stop)
 
         # Patch the 'get_score_at_rank' method
         self.get_score_at_rank_patch = patch.object(
-            self.mock_leaderboard, 'get_score_at_rank', autospec=True
+            self.mock_leaderboard, "get_score_at_rank", autospec=True
         )
         self.mock_get_score_at_rank = self.get_score_at_rank_patch.start()
         self.addCleanup(self.get_score_at_rank_patch.stop)
         # Initialize the RankingManager with the mocked leaderboard and teams manager
-        self.ranking_manager = RankingManager(
-            self.mock_leaderboard, self.mock_teams_manager
-        )
+        self.ranking_manager = RankingManager(self.mock_leaderboard)
         self._update_players_leaderboard_score_patch = patch.object(
             self.ranking_manager, "_update_players_leaderboard_score", autospec=True
         )
@@ -65,7 +56,7 @@ class TestRankingManager(unittest.TestCase):
     def test_update_user_rank_by_spaces_for_individual_user(self):
         # Arrange
         initiator = MagicMock()
-        initiator.team_id = None
+        initiator.team = None
         initiator.user_id = 1
         initiator.score = 100
         initiator.rank = 90
@@ -85,7 +76,7 @@ class TestRankingManager(unittest.TestCase):
         )
         # Act
         self.ranking_manager.update_user_rank_by_spaces(initiator, spaces)
-        
+
         # Assert
         self.ranking_manager._calculate_points_to_rank.assert_called_once()
         self.ranking_manager._update_players_leaderboard_score.assert_called_once_with(
@@ -97,19 +88,24 @@ class TestRankingManager(unittest.TestCase):
 
     def test_update_user_rank_by_spaces_for_team_user(self):
         # Arrange
+        team = MagicMock()
+        team.team_id = "team1"
+        team.score = 500
+        team.rank = 50
+
         initiator = MagicMock()
-        initiator.team_id = 456
+        initiator.team = team
+        initiator.team_id = team.team_id
         initiator.user_id = 2
         initiator.score = 100
         initiator.rank = 90
 
-        team = self.mock_teams_manager.load_teams.return_value[initiator.team_id]
-        self.mock_leaderboard.get_player_score.return_value = team.score
-        self.mock_leaderboard.get_player_rank.return_value = team.rank
+        self.mock_leaderboard.get_player_score.return_value = initiator.team.score
+        self.mock_leaderboard.get_player_rank.return_value = initiator.team.rank
         self.mock_leaderboard.get_score_at_rank.return_value = 101
 
         spaces = 10
-        expected_new_rank = 80
+        expected_new_rank = team.rank - spaces
         expected_new_score = (
             105  # This would be determined by the logic in _calculate_points_to_rank
         )
@@ -119,13 +115,18 @@ class TestRankingManager(unittest.TestCase):
         )
         # Act
         self.ranking_manager.update_user_rank_by_spaces(initiator, spaces)
-        
+        print(initiator.team_id)
         # Assert
         self.ranking_manager._calculate_points_to_rank.assert_called_once()
         self.ranking_manager._update_players_leaderboard_score.assert_called_once_with(
             initiator.team_id, expected_new_score
         )
 
+        assert team.score == expected_new_score
+        assert team.rank == expected_new_rank
+
+    def tearDown(self):
+        self.mock_get_redis_connection.stop()
 
 if __name__ == "__main__":
     unittest.main()

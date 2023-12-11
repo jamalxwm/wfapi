@@ -80,10 +80,13 @@ class Player:
             self._rank = max(0, self._rank - rank_update['spaces']) 
         else:
             self._rank = max(0, rank_update['rank'])
-
+    @property
+    def team(self):
+        return self._team if self._team else None
+    
     @property
     def team_id(self):
-        return self.team._team_id if self._team else None
+        return self._team.team_id if self._team else None
 
     @property
     def teammate_id(self):
@@ -93,9 +96,8 @@ class Player:
             if member.user_id != self.user_id:
                 return member.user_id
 
-
     def join_team(self, team):
-        if self.team:
+        if self._team:
             raise Exception('This player is already on a team') 
 
         self._team = team
@@ -103,6 +105,6 @@ class Player:
     def leave_team(self, score):
         if self._team:
             self._score = score
-            self.team = None
+            self._team = None
         else:
             raise Exception('This player is not on a team')

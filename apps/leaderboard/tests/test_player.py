@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import MagicMock
 from apps.leaderboard.models import Player
 
 class TestplayerCase:
@@ -6,6 +7,12 @@ class TestplayerCase:
     @pytest.fixture(scope='class', autouse=True)
     def player(self):
         return Player("John Doe")
+
+    @pytest.fixture(scope='class', autouse=True)
+    def mock_team(self):
+        team = MagicMock()
+        team.team_id = 'team1'
+        return team
 
     def test_create_new_player(self, player):
         assert player.user_id == "John Doe"
@@ -32,17 +39,16 @@ class TestplayerCase:
         with pytest.raises(Exception):
             player.leave_team()
 
-    def test_join_team(self, player):
-        player.join_team('team1', 'Jane Doe')
+    def test_join_team(self, player, mock_team):
+        player.join_team(mock_team)
         assert player.team_id == 'team1'
-        assert player.teammate_id == 'Jane Doe'
     
     def test_team_players_rank_decrements_by_spaces(self, player):
         rank_update = {'rank' : 75, 'spaces': 10}
         player.rank = rank_update
         assert player.rank == 65
 
-    def test_team_players_score_dont_change(self, player):
+    def test_players_score_dont_update_while_on_team(self, player):
         NEW_SCORE = 200
         player.score = NEW_SCORE
 
@@ -53,10 +59,11 @@ class TestplayerCase:
             player.join_team('team2', 'Joe Bloggs')
 
     def test_leave_team(self, player):
-        player.leave_team()
+        NEW_SCORE = 505
+        player.leave_team(NEW_SCORE)
 
         assert player.team_id == None
-        assert player.teammate_id == None
+        assert player.score == NEW_SCORE
 
     def test_join_team_unknown_error(self, player):
         player._team_id = 'team3'
