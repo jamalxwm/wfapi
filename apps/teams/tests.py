@@ -1,193 +1,117 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from .views import TeamUser, Teams
+from .models import Team
 from .manager import TeamsManager
 
-class TestTeamUserCase(unittest.TestCase):
+class TestTeam(unittest.TestCase):
     def setUp(self):
-        self.conn = MagicMock()
-        self.lb = MagicMock()
-        self.rm = MagicMock()
-        self.teams = "teams"
-        self.user_id = "user123"
-        self.team_user = TeamUser(
-            user_id=self.user_id,
-            teams=self.teams,
-            lb=self.lb,
-            ranking_manager=self.rm,
-            conn=self.conn
-        )
+        self.team = Team(team_id=1)
+        self.mock_members = [MagicMock(), MagicMock()]
 
-    def test_is_user_teamed_exist(self):
-        self.conn.hexists.return_value = 1
+    def test_initialization(self):
+        self.assertEqual(self.team.team_id, 1)
+        self.assertEqual(self.team.score, 0)
+        self.assertEqual(self.team.rank, 0)
+        self.assertEqual(len(self.team.members), 0)
 
-        self.assertTrue(self.team_user.is_user_teamed())
+    def test_start_team(self):
+        self.team.start_team(members=self.mock_members, rank=5, score=100)
+        self.assertEqual(self.team.score, 100)
+        self.assertEqual(self.team.rank, 5)
+        self.assertEqual(self.team.members, set(self.mock_members))
+        for mock_member in self.mock_members:
+            mock_member.join_team.assert_called_once_with(self.team)
 
-    def test_is_user_teamed_not_exist(self):
-        self.conn.hexists.return_value = 0
+    def test_end_team(self):
+        # Preparing the team with some members
+        self.team.start_team(members=self.mock_members, rank=5, score=100)
+        self.team.end_team()
+        self.assertEqual(len(self.team.members), 0)
 
-        self.assertFalse(self.team_user.is_user_teamed())
+    def test_score_setter(self):
+        self.team.score = 50
+        self.assertEqual(self.team.score, 50)
 
-    def test_get_user_fallback_values(self):
-        self.conn.hmget.return_value = ["rank_mock", "score_mock"]
+    def test_rank_setter(self):
+        self.team.rank = 3
+        self.assertEqual(self.team.rank, 3)
 
-        rank, score = self.team_user.get_user_fallback_values()
+class TestTeamsManager(unittest.TestCase):
 
-        self.conn.hmget.assert_called_once_with(self.teams, [f'{self.user_id}:fallback_rank', f'{self.user_id}:fallback_score'])
-
-        assert rank == "rank_mock"
-        assert score == "score_mock"
-
-    @patch.object(TeamUser, 'get_user_lb_rank_score')
-    def test_initialize_user_fallbacks(self, mock_get_user_lb_rank_score):
-        mock_get_user_lb_rank_score.return_value = ("mock_rank", "mock_score")
-
-        result = self.team_user.initialize_user_fallbacks()
-
-        mock_get_user_lb_rank_score.assert_called_once()
-
-        expected_result = {
-            "team_id": "",
-            "fallback_rank": 'mock_rank',
-            "fallback_score": 'mock_score'
-        }
-        
-        assert result == expected_result
-
-    @patch.object(TeamUser, 'get_user_fallback_values')
-    def test_update_user_fallback_values(self, mock_get_user_fallback_values):
-        CURR_SCORE = 101
-        NEW_SCORE = 99.5
-        CURR_RANK = 10
-        SPACES = 5
-        mock_get_user_fallback_values.return_value = (CURR_RANK, CURR_SCORE)
-
-        self.team_user.update_user_fallbacks(NEW_SCORE, SPACES)
-
-        mock_get_user_fallback_values.assert_called_once()
-        self.conn.hincrby.assert_called_once_with(self.teams, f'{self.user_id}:fallback_rank, {-SPACES}')
-        self.conn.hincrbyfloat.assert_called_once_with(self.teams, f'{self.user_id}:fallback_score, {NEW_SCORE}')
-
-    @patch.object(TeamUser, 'get_user_fallback_values')
-    def test_update_user_fallback_rank_below_zero(self, mock_get_user_fallback_values):
-        CURR_SCORE = 101
-        NEW_SCORE = 99.5
-        CURR_RANK = 50
-        SPACES = 300
-        mock_get_user_fallback_values.return_value = (CURR_RANK, CURR_SCORE)
-
-        self.team_user.update_user_fallbacks(NEW_SCORE, SPACES)
-
-        mock_get_user_fallback_values.assert_called_once()
-        self.conn.hincrby.assert_called_once_with(self.teams, f'{self.user_id}:fallback_rank, {-CURR_RANK}')
-        self.conn.hincrbyfloat.assert_called_once_with(self.teams, f'{self.user_id}:fallback_score, {NEW_SCORE}')
-    
-    @patch.object(TeamUser, 'get_user_fallback_values')
-    def test_restore_user_to_lb_rank(self, mock_get_user_fallback_values):
-        RANK = 9
-        SCORE = 101.5
-        mock_get_user_fallback_values.return_value = (RANK, SCORE)
-
-        self.team_user.restore_user_to_lb_rank()
-
-        self.rm._move_user_to_rank.assert_called_once_with(self.user_id, SCORE, RANK, skip_value=0)
-    
-    @patch.object(TeamUser, 'get_user_fallback_values')
-    def test_restore_user_to_lb_score(self, mock_get_user_fallback_values):
-        RANK = 9
-        SCORE = 101.5
-        mock_get_user_fallback_values.return_value = (RANK, SCORE)
-
-        self.team_user.restore_user_to_lb_score()
-
-        self.lb.add_user.assert_called_once_with(self.user_id, SCORE)
-
-    @patch.object(TeamUser, 'get_user_lb_rank_score')
-    def test_get_user_lb_rank_score(self, mock_get_user_lb_rank_score):
-        mock_get_user_lb_rank_score.return_value = ("mock_rank", "mock_score")
-
-        rank, score = self.team_user.get_user_lb_rank_score()
-
-        assert rank == "mock_rank"
-        assert score =="mock_score"
-
-
-class TeamsTestCase(unittest.TestCase):
-    
     def setUp(self):
-        self.conn = MagicMock()
-        self.lb = MagicMock()
-        self.teams_dict = {'userA': {'team_id': 'userA_userB,'}}
-        self.teams = Teams(lb=self.lb, conn=self.conn)
+        # Mock the leaderboard object
+        self.mock_leaderboard = MagicMock()
+        self.teams_manager = TeamsManager(self.mock_leaderboard)
 
-    def tearDown(self):
-        patch.stopall()
+        # Mock user objects
+        self.user1 = MagicMock()
+        self.user1.user_id = 'user1'
+        self.user1.team = None
+        self.user1.rank = 500
+        self.user1.score = 5
+
+        self.user2 = MagicMock()
+        self.user2.user_id = 'user2'
+        self.user2.team = None
+        self.user2.rank = 100
+        self.user2.score = 500
+
+        # Mock team object
+        self.team = MagicMock()
+        self.team.members = [self.user1, self.user2]
+        self.team.team_id = 'user1_user2'
+        self.team.score = 100
     
-    def test_init(self):
-        teams = Teams(self.teams_dict)
-
-    def test_get_team_id(self):
-        self.conn.hget.return_value = 'userA_userB'
-        user = 'userA'
-
-        result = self.teams.get_team_id(user)
-
-        self.conn.hget.assert_called_once_with('teams_hashset', f'{user}:team_id')
-        self.assertEqual(result, 'userA_userB')
-
-
-    def test_create_team_id(self):
-        result = self.teams.create_team_id('userA', 'userB')
-
-        self.assertEqual(result, 'userA_userB')
+    def mock_get_rank_and_score(self, user_id):
+        return (500, 5) if user_id == 'user1' else (100, 500)
     
-    @patch.object(Teams, 'get_team_id')
-    def test_get_team_members(self, mock_get_team_id):
-        mock_get_team_id.return_value = 'userA_userB'
-        user = 'userA'
-        result = self.teams.get_team_members(user)
-        self.teams.get_team_id.assert_called_once_with(user)
+    def test_validate_team_members_creates_team(self):
+        with patch.object(TeamsManager, '_get_rank_and_score', side_effect=self.mock_get_rank_and_score):
+            self.mock_leaderboard.get_user_rank_and_score.return_value = (1, 100)
+            self.teams_manager.validate_team_members([self.user1, self.user2])
+            created_team = next((team for team in self.teams_manager.teams if team.team_id == 'user1_user2'), None)
+            self.assertIsNotNone(created_team)
+            self.assertEqual(created_team.team_id, 'user1_user2')
+            self.assertEqual(created_team.score, 500)
+            self.assertEqual(len(self.teams_manager.teams), 1)
 
-        assert result == ['userA', 'userB']
-
-class TestTeamsManagerCase(unittest.TestCase):
-    def setUp(self):
-        self.conn = MagicMock()
-        self.teams = MagicMock()
-        self.teamuser = MagicMock()
-        self.users = ['user1', 'user2']
-        self.teamsmanager = TeamsManager(
-            teams=self.teams,
-            teamuser=self.teamuser,
-            conn=self.conn
-        )
-
-    def test_validate_team_members(self):
-        self.teamuser.is_user_teamed.return_value = False
-        self.teams.create_team_id.return_value = 'team1'
-        
-        users, team_id = self.teamsmanager.validate_team_members(self.users)
-        
-        self.assertEqual(users, self.users)
-        self.assertEqual(team_id, 'team1')
-        self.teams.create_team_id.assert_called_once_with(*self.users)
-
-    def test_check_users_not_teamed_exception(self):
-        self.teamuser.is_user_teamed.return_value = True
-        
+    def test_validate_team_members_raises_exception_for_teamed_user(self):
+        self.user1.team = 'some_team'
         with self.assertRaises(Exception) as context:
-            self.teamsmanager.validate_team_members(self.users)
-        
-        self.assertTrue('User already in a team' in str(context.exception))
+            self.teams_manager.validate_team_members([self.user1, self.user2])
+        self.assertIn('already in a team', str(context.exception))
 
-    def test_check_team_is_duo_exception(self):
-        self.teamuser.is_user_teamed.return_value = False
-        users = ['user1', 'user2', 'user3']
-        
+    def test_validate_team_members_raises_exception_for_invalid_team_size(self):
         with self.assertRaises(Exception) as context:
-            self.teamsmanager.validate_team_members(users)
-        
-        self.assertTrue('Teams must be two users' in str(context.exception))
+            self.teams_manager.validate_team_members([self.user1])
+        self.assertIn('Teams must consist of two users', str(context.exception))
 
-if __name__ == "__main__":
+    def test_disband_team(self):
+        # Set up the team and add it to the TeamsManager
+        self.user1.team = self.team
+        self.user2.team = self.team
+        self.teams_manager.teams.add(self.team)
+        self.teams_manager.disband_team(self.user1)
+        self.assertNotIn(self.team, self.teams_manager.teams)
+        self.mock_leaderboard.remove_user.assert_called_with(self.team.team_id)
+        self.team.end_team.assert_called_once()
+
+    def test_team_id_creation(self):
+        team_id = self.teams_manager._create_team_id([self.user1, self.user2])
+        self.assertEqual(team_id, 'user1_user2')
+
+    def test_add_and_remove_from_leaderboard(self):
+        self.teams_manager._create_new_team(self.team)
+        self.mock_leaderboard.add_user.assert_called_with(self.team.team_id, self.team.score)
+        self.teams_manager._remove_team_from_lb(self.team)
+        self.mock_leaderboard.remove_user.assert_called_with(self.team.team_id)
+
+    def test_reinstate_team_members_to_lb(self):
+        self.mock_leaderboard.get_score_at_rank.return_value = 50
+        self.teams_manager._reinstate_team_members_to_lb(self.team)
+        calls = [unittest.mock.call(self.user1.user_id, 50), unittest.mock.call(self.user2.user_id, 50)]
+        self.mock_leaderboard.add_user.assert_has_calls(calls, any_order=True)
+
+
+if __name__ == '__main__':
     unittest.main()

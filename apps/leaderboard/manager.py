@@ -11,9 +11,8 @@ class RankingManager:
         current_score = self.leaderboard.get_player_score(player_id)
         current_rank = self.leaderboard.get_player_rank(player_id)
 
-        if current_rank is None and not initiator.team:
-            self.leaderboard.add_player(player_id, initiator.score)
-            self.update_user_rank_by_spaces(initiator, spaces)
+        if current_rank is None:
+            self._handle_missing_leaderboard_player(initiator, spaces)
             return
 
         target_rank = max(0, current_rank - spaces)
@@ -43,3 +42,10 @@ class RankingManager:
             team = initiator.team
             team.rank = target_rank
             team.score = new_score
+
+    def _handle_missing_leaderboard_player(self, initiator, spaces):
+        if initiator.team is None:
+            self.leaderboard.add_player(initiator.user_id, initiator.score)
+            self.update_user_rank_by_spaces(initiator, spaces)
+        else:
+            raise Exception(f'{initiator.team.team_id} is missing from leaderboard')
