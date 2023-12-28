@@ -21,7 +21,7 @@ class UserProfile(models.Model):
     pronouns = models.CharField(max_length=30, verbose_name=_("Pronouns"), choices=PRONOUN_CHOICES)
     
     # Avatar info
-    avatar_id = models.ForeignKey('floaters.Floater', on_delete=models.CASCADE, verbose_name=_("Floater ID"), default=1)
+    avatar_id = models.ForeignKey('floaters.Floater', on_delete=models.CASCADE, verbose_name=_("Floater ID"), null=True)
     
     # User ravel habits
     is_expat = models.BooleanField(default=False, verbose_name=_("Is Expat"))

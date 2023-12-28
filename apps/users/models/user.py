@@ -5,40 +5,32 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.apps import apps
 import re
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 class CustomUserManager(BaseUserManager):
-    def create_non_referred_user(self, email, first_name, last_name, password=None, **extra_fields):
+    def create_user(self, email, first_name, last_name, password=None, referral_code=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must not be empty')
         if not password:
             raise ValueError('Password field must not be empty')
 
-        user = self.model(email=email, first_name=first_name, last_name=last_name, **extra_fields)
+        user = self.model(email=self.normalize_email(email), first_name=first_name, last_name=last_name, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+
+        if referral_code:
+            self.process_referral(user, referral_code)
+
         return user
 
-    def create_referred_user(self, email, first_name, last_name, referral_code, password=None, **extra_fields):
-        # Find the referring user
+    def process_referral(self, referred_user, referral_code):
         try:
             referring_user = self.model.objects.get(referral_code=referral_code)
         except ObjectDoesNotExist:
             raise ValueError(f'No user found with referral code {referral_code}')
-
-        # Create a new user
-        new_user = self.create_non_referred_user(email, first_name, last_name, password)
-
+        
         #Create a referral entry
         ReferralModel = apps.get_model('referrals', 'Referral')
-        ReferralModel.objects.create(referring_user=referring_user, referred_user=new_user)
-
-        # Increase referral count for the referring user
-        referring_user.increment_referral_count()
-        referring_user.update_user_tier_access()
-
-        return new_user
+        ReferralModel.objects.create(referring_user=referring_user, referred_user=referred_user)
 
     def create_superuser(self, email, password, **extra_fields):
         """
@@ -87,18 +79,17 @@ class User(AbstractUser):
             self.referral_code = code
             self.save()
 
-    def increment_referral_count(self):
-        self.referral_count += 1
-        self.save()
+    def increment_referral_count(user):
+        user.referral_count += 1
+        user.save(update_fields=['referral_count'])
 
-    def update_user_tier_access(self):
-        if self.referral_count >= 25:
-            self.tier_access = 4
-        elif self.referral_count >= 15:
-            self.tier_access = 3
-        elif self.referral_count >= 5:
-            self.tier_access = 2
+    def update_user_tier_access(user):
+        if user.referral_count >= 25:
+            user.tier_access = 4
+        elif user.referral_count >= 15:
+            user.tier_access = 3
+        elif user.referral_count >= 5:
+            user.tier_access = 2
         else:
-            self.tier_access = 1
-        self.save()
-
+            user.tier_access = 1
+        user.save(update_fields=['tier_access'])

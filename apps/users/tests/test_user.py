@@ -1,12 +1,12 @@
 import pytest
 from uuid import UUID
 from django.db import IntegrityError
-from .models import User as UserModel
+from apps.users.models import User as UserModel
 from apps.referrals.models import Referral
 
 @pytest.fixture
 def user():
-    return UserModel.objects.create_non_referred_user(
+    return UserModel.objects.create_user(
         email='testuser@test.com',
         first_name='Test',
         last_name='User',
@@ -21,7 +21,7 @@ class TestCreateUser:
 
     def test_create_user_without_email(self):
         with pytest.raises(ValueError):
-            user = UserModel.objects.create_non_referred_user(
+            user = UserModel.objects.create_user(
                 email='',
                 first_name='Test',
                 last_name='User',
@@ -31,7 +31,7 @@ class TestCreateUser:
 
     def test_create_user_without_first_name(self):
         with pytest.raises(ValueError):
-            UserModel.objects.create_non_referred_user(
+            UserModel.objects.create_user(
                 email='testuser2@test.com',
                 first_name='',
                 last_name='User',
@@ -40,7 +40,7 @@ class TestCreateUser:
             )
 
     def test_create_user_with_duplicate_email(self):
-        UserModel.objects.create_non_referred_user(
+        UserModel.objects.create_user(
                 email='testuser@test.com',
                 first_name='Test',
                 last_name='User',
@@ -48,7 +48,7 @@ class TestCreateUser:
                 username='testuser@test.com',
             )
         with pytest.raises(IntegrityError):
-            duplicate_user = UserModel.objects.create_non_referred_user(
+            duplicate_user = UserModel.objects.create_user(
                 email='testuser@test.com',
                 first_name='Test',
                 last_name='User',
@@ -77,7 +77,7 @@ class TestCreateReferralCode:
         code = 'non-unique-code'
         user.set_referral_code(code)
 
-        user2 = UserModel.objects.create_non_referred_user(
+        user2 = UserModel.objects.create_user(
                 email='testuser2@test.com',
                 first_name='Test',
                 last_name='User',
@@ -97,7 +97,7 @@ class TestCreateReferralCode:
 class TestCreateUserWithReferral: 
     def test_create_user_with_referral_error(self):
         with pytest.raises(ValueError) as e:
-            UserModel.objects.create_referred_user(
+            UserModel.objects.create_user(
                 email='test@test.com',
                 first_name='Test',
                 last_name='User',
@@ -112,7 +112,7 @@ class TestCreateUserWithReferral:
         referring_user = user
         referring_user.set_referral_code(code)
 
-        referred_user = UserModel.objects.create_referred_user(
+        referred_user = UserModel.objects.create_user(
                 email='test@test.com',
                 first_name='Test',
                 last_name='User',
@@ -151,7 +151,7 @@ class TestUserTierUpdate:
         # Assume the threshold for tier upgrade is 5 referrals
         tier_upgrade_threshold = 5
         for i in range(tier_upgrade_threshold):
-            referred_user = UserModel.objects.create_referred_user(
+            referred_user = UserModel.objects.create_user(
                 email=f'referred{i}@test.com',
                 first_name='Referred',
                 last_name='User',
