@@ -56,17 +56,17 @@ class TeamsManager:
         pass
 
     def _get_rank_and_score(self, user_id):
-        return self.leaderboard.get_user_rank(user_id, withscores=True)
+        return self.leaderboard.get_player_rank(user_id, withscores=True)
     
     def _remove_team_members_from_lb(self, team):
         for member in team.members:
-            self.leaderboard.remove_user(member.user_id)
+            self.leaderboard.remove_player(member.user_id)
     
     def _add_team_to_lb(self, team):
-        self.leaderboard.add_user(team.team_id, team.score)
+        self.leaderboard.add_player(team.team_id, team.score)
 
     def _remove_team_from_lb(self, team):
-        self.leaderboard.remove_user(team.team_id)
+        self.leaderboard.remove_player(team.team_id)
 
     def _reinstate_team_members_to_lb(self, team):
         for member in team.members:
@@ -74,6 +74,6 @@ class TeamsManager:
             if not target_score:
                 target_score = team.score / 2
             member.leave_team(target_score)
-            self.leaderboard.add_user(member.user_id, target_score)
+            self.leaderboard.add_player(member.user_id, target_score)
     
     

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "graphene_django",
     "apps.users",
+    "apps.utils",
     "apps.floaters",
     "apps.tasks",
     "apps.referrals",

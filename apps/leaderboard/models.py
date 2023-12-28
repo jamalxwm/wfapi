@@ -87,7 +87,7 @@ class Player:
     @property
     def team_id(self):
         return self._team.team_id if self._team else None
-
+ 
     @property
     def teammate_id(self):
         if not self._team:

@@ -27,6 +27,7 @@ pytest = "*"
 pytest-django = "*"
 faker = "*"
 pytest-mock = "*"
+django-countries = "*"
 
 [dev-packages]
 

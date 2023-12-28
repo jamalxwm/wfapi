@@ -1,8 +1,8 @@
 from django.db import models
 
-class Timestamps(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class CompanyOfInterest(models.Model):
+    domain = models.CharField(max_length=255)
 
-    class Meta:
-       abstract = True
+    def __str__(self):
+        return self.domain
+    
