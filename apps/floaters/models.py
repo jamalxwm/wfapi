@@ -27,9 +27,9 @@ class Floater(models.Model):
         GOD: 75,
     }
 
-    display_name = models.CharField()
+    display_name = models.CharField(max_length=25)
     display_description = models.TextField(default='enter some text')
-    display_order = models.IntegerField(unique=True, default=0)
+    display_order = models.IntegerField(unique=True, null=False)
     short_description = models.CharField(default='short')
     tier = models.CharField(max_length=2, choices=TIER_CHOICES, default=STARTER_PACK)
     avatar_icon_1x = models.ImageField(upload_to='floaters/icons', blank=True, null=True)
@@ -52,7 +52,7 @@ class Floater(models.Model):
 
 class FloaterCollection(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='floater_collection')
-    floaters = models.ManyToManyField(Floater, related_name='collections')
+    floaters = models.ManyToManyField(Floater, related_name='collections', blank=True)
 
     def add_floater(self, floater):
         # Add a floater to the collection
