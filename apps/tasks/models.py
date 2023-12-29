@@ -17,7 +17,7 @@ class Tasks(models.Model):
     uri = models.URLField(blank=True, null=True)
     queue_jumps = models.PositiveBigIntegerField(blank=False, default=10)
     
-    prerequisite = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='dependent_tasks')
+    prerequisite = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='dependent')
     max_user_completions = models.PositiveIntegerField(default=1, help_text="Maximum completions allowed per user.")
     display_order = models.PositiveIntegerField(unique=True)
     total_global_completions = models.PositiveIntegerField(default=0, help_text="Total completions by all users.")
@@ -58,7 +58,30 @@ class UserTasks(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
     state = models.CharField(max_length=10, choices=STATE_CHOICES)
-    completions = models.PositiveIntegerField(default=0)
+    completions = models.PositiveIntegerField(default=1)
 
+    def complete(self):
+        # Mark the task as completed and handle related logic.
+        if self.state != 'COMPLETED':
+            self.completions += 1
+            if self.completions >= self.task.max_user_completions:
+                self.state = 'COMPLETED'
+                # Unlock dependent tasks
+                self._unlock_dependent_tasks()
+            self.save()
+
+    def _unlock_dependent_tasks(self):
+        # Unlock tasks that are dependent on the completion of this task.
+        for dependent in self.task.dependent.all():
+            user_task, created = UserTasks.objects.get_or_create(user=self.user, task=dependent)
+            if created or user_task.state != 'COMPLETED':
+                user_task.state = 'AVAILABLE'
+                user_task.save()
+
+    def save(self, *args, **kwargs):
+        # The save method now only calls the superclass's save method.
+        # All business logic is handled in other methods.
+        super(UserTasks, self).save(*args, **kwargs)
+    
     def __str__(self):
         return f"{self.user.username} - {self.task.title}"

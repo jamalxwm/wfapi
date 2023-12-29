@@ -28,6 +28,10 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     assign_hidden_tasks(instance.profile)
 
     instance.profile.save()
+
+@receiver(post_save, sender=UserProfile)
+def user_profile_changed(sender, instance, **kwargs):
+    assign_hidden_tasks(instance)
 #     if CompanyOfInterest.objects.filter(domain=email_domain).exists():
 #         instance.profile.is_company_of_interest = True
 
