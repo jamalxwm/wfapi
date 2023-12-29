@@ -23,7 +23,7 @@ class UserProfile(models.Model):
     # Avatar info
     avatar_id = models.ForeignKey('floaters.Floater', on_delete=models.CASCADE, verbose_name=_("Floater ID"), null=True)
     
-    # User ravel habits
+    # User travel habits
     is_expat = models.BooleanField(default=False, verbose_name=_("Is Expat"))
     is_parent = models.BooleanField(default=False, verbose_name=_("Is Parent"))
     is_sports_traveler = models.BooleanField(default=False, verbose_name=_("Is Sports Traveler"))

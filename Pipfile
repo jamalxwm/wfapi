@@ -28,6 +28,7 @@ pytest-django = "*"
 faker = "*"
 pytest-mock = "*"
 django-countries = "*"
+celery = "*"
 
 [dev-packages]
 

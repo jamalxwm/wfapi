@@ -3,8 +3,9 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.apps import apps
 from django.contrib.auth import get_user_model
-from .models import UserProfile, User
+from .models import UserProfile
 from apps.utils.models import CompanyOfInterest
+from apps.tasks.utils import assign_hidden_tasks  # Import the utility function
 
 User = get_user_model()
 
@@ -15,16 +16,16 @@ ACADEMIC_DOMAINS = ['.edu', '.ac.uk']
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
-#     instance.profile.save()
 
     email_domain = instance.email.split('@')[-1]
 
     if email_domain in COMPANIES_OF_INTEREST:
         instance.profile.is_company_of_interest = True
         
-
     if any(email_domain.endswith(academic_domain) for academic_domain in ACADEMIC_DOMAINS):
         instance.profile.is_student = True
+
+    assign_hidden_tasks(instance.profile)
 
     instance.profile.save()
 #     if CompanyOfInterest.objects.filter(domain=email_domain).exists():
