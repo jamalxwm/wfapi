@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Floater(models.Model):
     STARTER_PACK = 'ST'
@@ -49,3 +50,15 @@ class Floater(models.Model):
     def __str__(self):
         return self.display_name
 
+class FloaterCollection(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='floater_collection')
+    floaters = models.ManyToManyField(Floater, related_name='collections')
+
+    def add_floater(self, floater):
+        # Add a floater to the collection
+        if not self.floaters.filter(id=floater.id).exists():
+            self.floaters.add(floater)
+
+    def remove_floater(self, floater):
+        # Remove a floater from the collection
+        self.floaters.remove(floater)

@@ -1,11 +1,8 @@
 from django.db import models, transaction
 from django.db.models import F
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
-User = get_user_model()
-
 
 class Tasks(models.Model):
     TARGET_DEMO_CHOICES = [
@@ -90,7 +87,7 @@ class UserTasks(models.Model):
         ("COMPLETED", "Completed"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
     state = models.CharField(max_length=10, choices=STATE_CHOICES)
     repetitions = models.PositiveIntegerField(default=0)
