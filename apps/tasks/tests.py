@@ -10,32 +10,30 @@ User = get_user_model()
 class TaskTestCase(TestCase):
     def setUp(self):
         # Create some tasks
-        self.task1 = Tasks.objects.create(title="Task 1", display_order=1, max_user_completions=1)
+        self.task1 = Tasks.objects.create(title="Task 1", display_order=1, max_repetitions=1)
         self.task2 = Tasks.objects.create(
             title="Task 2",
             prerequisite=self.task1,
             display_order=2,
-            max_user_completions=1
+            max_repetitions=5
         )
         self.task3 = Tasks.objects.create(
             title="Task 3",
             display_order=3,
             is_hidden=True,
             target_demographic="EXPAT",
-            max_user_completions=1
+            max_repetitions=1
         )
-
-    def test_user_task_creation(self):
-        # Create a new user
-        new_user = User.objects.create_user(
+        self.user = User.objects.create_user(
             email="testuser@test.com",
             password="testpass123",
             first_name="test",
             last_name="user",
         )
 
+    def test_user_task_creation(self):
         # Check that UserTask instances have been created
-        user_tasks = UserTasks.objects.filter(user=new_user).order_by(
+        user_tasks = UserTasks.objects.filter(user=self.user).order_by(
             "task__display_order"
         )
 
@@ -52,37 +50,67 @@ class TaskTestCase(TestCase):
             # This will raise an IndexError if there is no third UserTask, which is expected
             hidden_task_state = user_tasks[2].state
 
-#     def test_target_demo_user_sees_hidden_task(self):
-#         # Create a new expat user
-#         expat_user = User.objects.create_user(
-#             email="expatuser@test.com",
-#             password="expatpass123",
-#             first_name="expat",
-#             last_name="user",
-#         )
-#         # Update the user_profile for the expat_user to set is_expat to True
-#         expat_user_profile = expat_user.profile
-#         expat_user_profile.is_expat = True
-#         expat_user_profile.save()
+    def test_target_demo_user_sees_hidden_task(self):
+        # Create a new expat user
+        expat_user = User.objects.create_user(
+            email="expatuser@test.com",
+            password="expatpass123",
+            first_name="expat",
+            last_name="user",
+        )
+        # Update the user_profile for the expat_user to set is_expat to True
+        expat_user_profile = expat_user.profile
+        expat_user_profile.is_expat = True
+        expat_user_profile.save()
 
-#         # Check that UserTask instances have been created, including the hidden task
-#         user_tasks = UserTasks.objects.filter(user=expat_user).order_by(
-#             "task__display_order"
-#         )
-#         total_tasks_count = Tasks.objects.count()
+        # Check that UserTask instances have been created, including the hidden task
+        user_tasks = UserTasks.objects.filter(user=expat_user).order_by(
+            "task__display_order"
+        )
+        total_tasks_count = Tasks.objects.count()
+        
+        self.assertEqual(user_tasks.count(), total_tasks_count)
+        self.assertEqual(user_tasks[2].task.title, "Task 3")
+        self.assertEqual(user_tasks[2].state, "AVAILABLE")
 
-#         self.assertEqual(user_tasks.count(), total_tasks_count)
-#         self.assertEqual(user_tasks[2].task.title, "Task 3")
-#         self.assertEqual(user_tasks[2].state, "AVAILABLE")
+    def test_single_repitition_task_completes(self):
+        user_task = UserTasks.objects.create(user=self.user, task=self.task1)
+        user_task.complete()
 
-#     def test_single_completion_task(self):
-#         user = User.objects.create_user(email="single@task.com", password="testpass")
-#         single_completion_task = Tasks.objects.create(title="Single Completion Task", display_order=4, max_user_completions=1)
+        self.assertEqual(user_task.state, 'COMPLETED')
 
-#         user_task = UserTasks.objects.create(user=user, task=single_completion_task, state='AVAILABLE')
-#         user_task.save()
+    def test_multi_repetition_task_stays_available(self):
+        user_task = UserTasks.objects.create(user=self.user, task=self.task2, state='AVAILABLE')
+        user_task.complete() # First repetition
+        user_task.complete() # Second repetition
 
-#         self.assertEqual(user_task.state, 'COMPLETED')
+        self.assertEqual(user_task.state, 'AVAILABLE') 
+        self.assertEqual(user_task.repetitions, 2)
+
+    def test_dependent_tasks_unlock(self):
+        prerequisite_user_task, _ = UserTasks.objects.get_or_create(user=self.user, task=self.task1, defaults={'state': 'AVAILABLE'})
+        dependent_user_task, _ = UserTasks.objects.get_or_create(user=self.user, task=self.task2, defaults={'state': 'LOCKED'})
+        
+        prerequisite_user_task.complete()
+        dependent_user_task.refresh_from_db()
+        
+        self.assertEqual(dependent_user_task.state, 'AVAILABLE')
+
+    def test_repetitions_does_not_surpass_max(self):
+        MAX_REPITITIONS = 1
+        user_task = UserTasks.objects.create(user=self.user, task=self.task1)
+        user_task.complete()
+        user_task.complete()
+        user_task.complete()
+
+        self.assertEqual(user_task.repetitions, MAX_REPITITIONS)
+
+    def test_completed_task_does_not_complete_again(self):
+        user_task = UserTasks.objects.create(user=self.user, task=self.task1, state='COMPLETED')
+        initial_task_state = user_task.state
+        user_task.complete()
+        
+        self.assertEqual(user_task.state, 'COMPLETED')
 
 # class TaskModelTests(TestCase):
 #     def test_hidden_task_requires_target_demographic(self):

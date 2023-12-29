@@ -18,7 +18,7 @@ class Tasks(models.Model):
     queue_jumps = models.PositiveBigIntegerField(blank=False, default=10)
     
     prerequisite = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='dependent')
-    max_user_completions = models.PositiveIntegerField(default=1, help_text="Maximum completions allowed per user.")
+    max_repetitions = models.PositiveIntegerField(default=1, help_text="Maximum number of times a user can repeat a task.")
     display_order = models.PositiveIntegerField(unique=True)
     total_global_completions = models.PositiveIntegerField(default=0, help_text="Total completions by all users.")
     pending_global_completions = models.PositiveIntegerField(default=0, help_text="Number of users who have this task available but have not completed it.")
@@ -58,16 +58,16 @@ class UserTasks(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
     state = models.CharField(max_length=10, choices=STATE_CHOICES)
-    completions = models.PositiveIntegerField(default=1)
+    repetitions = models.PositiveIntegerField(default=0)
 
     def complete(self):
         # Mark the task as completed and handle related logic.
         if self.state != 'COMPLETED':
-            self.completions += 1
-            if self.completions >= self.task.max_user_completions:
+            self.repetitions += 1
+            if self.repetitions >= self.task.max_repetitions:
                 self.state = 'COMPLETED'
-                # Unlock dependent tasks
-                self._unlock_dependent_tasks()
+            # Unlock dependent tasks
+            self._unlock_dependent_tasks()
             self.save()
 
     def _unlock_dependent_tasks(self):
