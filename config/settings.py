@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "apps.leaderboard",
     "apps.teams",
     "apps.badges",
+    "apps.devices",
     "django_rename_app",
 ]
 

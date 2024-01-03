@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a080ac3a6eddff4645ae723cdb6f3d4c9054ecea5c3b60899ab643b53d399da5"
+            "sha256": "d4322871d460cbc0d109e482e4a5676fb9937c2c236480bf1e404c7ce04da707"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -143,12 +143,12 @@
         },
         "faker": {
             "hashes": [
-                "sha256:2d8a350e952225a145307d7461881c44a1c9320e90fbe8bd903d5947f133f3ec",
-                "sha256:ff61cca42547795bee8a11319792a8fee6d0f0cd191e831f7f3050c5851fcd8a"
+                "sha256:1d5dc0a75da7bc40741ee4c84d99dc087b97bd086d4222ad06ac4dd2219bcf3f",
+                "sha256:9c22c0a734ca01c6e4f2259eab5dab9081905a9d67b27272aea5c9feeb5a3789"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==21.0.0"
+            "version": "==22.0.0"
         },
         "graphene": {
             "hashes": [
@@ -415,6 +415,14 @@
             "markers": "python_version >= '3.8'",
             "version": "==1.0.0"
         },
+        "pytz": {
+            "hashes": [
+                "sha256:7b4fddbeb94a1eba4b557da24f19fdf9db575192544270a9101d8509f9f43d7b",
+                "sha256:ce42d816b81b68506614c11e8937d3aa9e41007ceb50bfdcb0749b921bf646c7"
+            ],
+            "index": "pypi",
+            "version": "==2023.3.post1"
+        },
         "redis": {
             "hashes": [
                 "sha256:0dab495cd5753069d3bc650a0dde8a8f9edde16fc5691b689a566eda58100d0f",
@@ -469,11 +477,11 @@
         },
         "tzdata": {
             "hashes": [
-                "sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a",
-                "sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda"
+                "sha256:aa3ace4329eeacda5b7beb7ea08ece826c28d761cda36e747cfbf97996d39bf3",
+                "sha256:dd54c94f294765522c77399649b4fefd95522479a664a0cec87f41bebc6148c9"
             ],
             "markers": "python_version >= '2'",
-            "version": "==2023.3"
+            "version": "==2023.4"
         },
         "vine": {
             "hashes": [

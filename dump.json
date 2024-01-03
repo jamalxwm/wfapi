@@ -1,0 +1,1284 @@
+[
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "add_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "change_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "delete_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "view_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "add_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "change_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "delete_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "view_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "add_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "change_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "delete_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "view_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user",
+        "content_type": [
+            "auth",
+            "user"
+        ],
+        "codename": "add_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user",
+        "content_type": [
+            "auth",
+            "user"
+        ],
+        "codename": "change_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user",
+        "content_type": [
+            "auth",
+            "user"
+        ],
+        "codename": "delete_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user",
+        "content_type": [
+            "auth",
+            "user"
+        ],
+        "codename": "view_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "add_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "change_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "delete_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "view_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "add_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "change_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "delete_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "view_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "add_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "change_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "delete_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user",
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "codename": "view_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add floaters",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "add_floaters"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change floaters",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "change_floaters"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete floaters",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "delete_floaters"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view floaters",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "view_floaters"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add floater",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "add_floater"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change floater",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "change_floater"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete floater",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "delete_floater"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view floater",
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "codename": "view_floater"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add referral",
+        "content_type": [
+            "referrals",
+            "referral"
+        ],
+        "codename": "add_referral"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change referral",
+        "content_type": [
+            "referrals",
+            "referral"
+        ],
+        "codename": "change_referral"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete referral",
+        "content_type": [
+            "referrals",
+            "referral"
+        ],
+        "codename": "delete_referral"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view referral",
+        "content_type": [
+            "referrals",
+            "referral"
+        ],
+        "codename": "view_referral"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user task",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "add_usertask"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user task",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "change_usertask"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user task",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "delete_usertask"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user task",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "view_usertask"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add tasks",
+        "content_type": [
+            "tasks",
+            "tasks"
+        ],
+        "codename": "add_tasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change tasks",
+        "content_type": [
+            "tasks",
+            "tasks"
+        ],
+        "codename": "change_tasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete tasks",
+        "content_type": [
+            "tasks",
+            "tasks"
+        ],
+        "codename": "delete_tasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view tasks",
+        "content_type": [
+            "tasks",
+            "tasks"
+        ],
+        "codename": "view_tasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add gradient",
+        "content_type": [
+            "gradients",
+            "gradient"
+        ],
+        "codename": "add_gradient"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change gradient",
+        "content_type": [
+            "gradients",
+            "gradient"
+        ],
+        "codename": "change_gradient"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete gradient",
+        "content_type": [
+            "gradients",
+            "gradient"
+        ],
+        "codename": "delete_gradient"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view gradient",
+        "content_type": [
+            "gradients",
+            "gradient"
+        ],
+        "codename": "view_gradient"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user profile",
+        "content_type": [
+            "users",
+            "userprofile"
+        ],
+        "codename": "add_userprofile"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user profile",
+        "content_type": [
+            "users",
+            "userprofile"
+        ],
+        "codename": "change_userprofile"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user profile",
+        "content_type": [
+            "users",
+            "userprofile"
+        ],
+        "codename": "delete_userprofile"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user profile",
+        "content_type": [
+            "users",
+            "userprofile"
+        ],
+        "codename": "view_userprofile"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add company of interest",
+        "content_type": [
+            "utils",
+            "companyofinterest"
+        ],
+        "codename": "add_companyofinterest"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change company of interest",
+        "content_type": [
+            "utils",
+            "companyofinterest"
+        ],
+        "codename": "change_companyofinterest"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete company of interest",
+        "content_type": [
+            "utils",
+            "companyofinterest"
+        ],
+        "codename": "delete_companyofinterest"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view company of interest",
+        "content_type": [
+            "utils",
+            "companyofinterest"
+        ],
+        "codename": "view_companyofinterest"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user tasks",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "add_usertasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user tasks",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "change_usertasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user tasks",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "delete_usertasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user tasks",
+        "content_type": [
+            "tasks",
+            "usertasks"
+        ],
+        "codename": "view_usertasks"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add floater collection",
+        "content_type": [
+            "floaters",
+            "floatercollection"
+        ],
+        "codename": "add_floatercollection"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change floater collection",
+        "content_type": [
+            "floaters",
+            "floatercollection"
+        ],
+        "codename": "change_floatercollection"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete floater collection",
+        "content_type": [
+            "floaters",
+            "floatercollection"
+        ],
+        "codename": "delete_floatercollection"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view floater collection",
+        "content_type": [
+            "floaters",
+            "floatercollection"
+        ],
+        "codename": "view_floatercollection"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add badge",
+        "content_type": [
+            "badges",
+            "badge"
+        ],
+        "codename": "add_badge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change badge",
+        "content_type": [
+            "badges",
+            "badge"
+        ],
+        "codename": "change_badge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete badge",
+        "content_type": [
+            "badges",
+            "badge"
+        ],
+        "codename": "delete_badge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view badge",
+        "content_type": [
+            "badges",
+            "badge"
+        ],
+        "codename": "view_badge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user badge",
+        "content_type": [
+            "badges",
+            "userbadge"
+        ],
+        "codename": "add_userbadge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user badge",
+        "content_type": [
+            "badges",
+            "userbadge"
+        ],
+        "codename": "change_userbadge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user badge",
+        "content_type": [
+            "badges",
+            "userbadge"
+        ],
+        "codename": "delete_userbadge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user badge",
+        "content_type": [
+            "badges",
+            "userbadge"
+        ],
+        "codename": "view_userbadge"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add device session",
+        "content_type": [
+            "devices",
+            "devicesession"
+        ],
+        "codename": "add_devicesession"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change device session",
+        "content_type": [
+            "devices",
+            "devicesession"
+        ],
+        "codename": "change_devicesession"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete device session",
+        "content_type": [
+            "devices",
+            "devicesession"
+        ],
+        "codename": "delete_devicesession"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view device session",
+        "content_type": [
+            "devices",
+            "devicesession"
+        ],
+        "codename": "view_devicesession"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user device",
+        "content_type": [
+            "devices",
+            "userdevice"
+        ],
+        "codename": "add_userdevice"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user device",
+        "content_type": [
+            "devices",
+            "userdevice"
+        ],
+        "codename": "change_userdevice"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user device",
+        "content_type": [
+            "devices",
+            "userdevice"
+        ],
+        "codename": "delete_userdevice"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user device",
+        "content_type": [
+            "devices",
+            "userdevice"
+        ],
+        "codename": "view_userdevice"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "6b7iamifud5e8k8haua1c8g7o3r7nopw",
+    "fields": {
+        "session_data": "e30:1rEBZe:AMtuuaJhHnCaCni_tuGMPE9WEskA2FX-0L2vkGy-PiU",
+        "expire_date": "2023-12-29T17:02:06.693Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "pyrm0aree1zmc6vrcehxbch60tdyf75d",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAQRe_C2hAYKAMu3XsGMjBEqgaS0q6Md9cmXej2v_f-S0Ta1hq3UZY4szgLK06_W6L8KG0HfKd26zL3ti5zkrsiDzrktXN5Xg7376DSqN9aG22xBGtCYgshODMplZ3yGYk0ASACaQs0MWHmwOCNweQ1OoWUULw_roM2qw:1rECaK:PH-SZl56Us24MiIdeWfhQI66WXRKWT2E24NNP-FyTlc",
+        "expire_date": "2023-12-29T18:06:52.691Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "w7icso0z8nlyaab42d44idny9aw6buip",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGllrQ-Q1JT1nsPZj4wBypDipEHeHSCmgfTPzXibRutS09jynUc3ZOHP43ZjkkdsG9E7tNlmZ2jKPbDfF7rTb66T5edndv4NKvX5rT5iFvQxRFQtCEOcAPcdBkJA8w9EHlZC1sEQFwEzgvALHgicF8_4A-4E4gw:1r80Zy:WkRQSWIMQdvukCCzAsJ1_DKqVjUnfQFV9Ia2IxHrBto",
+        "expire_date": "2023-12-12T16:04:54.146Z"
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$DqdEjKTWpO45zgzmshGGJn$t/PpuBhpL0aa6e3OajZFo9jUoaqPz5Ql6vf8jRZ24x8=",
+        "last_login": "2023-11-28T16:04:54.145Z",
+        "is_superuser": true,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "email": "jamal@example.com",
+        "username": "jamal@example.com",
+        "referral_code": null,
+        "referral_count": 0,
+        "tier_access": 1,
+        "created_at": "2023-12-12T20:23:01.633Z",
+        "date_joined": "2023-11-28T15:59:40.340Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$Puehybc6DqrWBNUx3DE3nL$lMpgNbil29devZeW+prS009uNE3+/eGwxeD8gdCH1Ws=",
+        "last_login": "2023-12-15T18:06:52.689Z",
+        "is_superuser": true,
+        "first_name": "jamal",
+        "last_name": "whorms",
+        "is_staff": true,
+        "is_active": true,
+        "email": "admin@admin.co",
+        "username": "",
+        "referral_code": null,
+        "referral_count": 0,
+        "tier_access": 1,
+        "created_at": "2023-12-15T16:33:30.617Z",
+        "date_joined": "2023-12-15T16:33:30.414Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$zBfQ8mRXovPySG7FjA4NOF$r4V9pR6838CJGU8gD31EnPnC4/MYvxQOHvwXMyBT35w=",
+        "last_login": null,
+        "is_superuser": true,
+        "first_name": "jamal",
+        "last_name": "mondesir",
+        "is_staff": true,
+        "is_active": true,
+        "email": "test@test.co.uk",
+        "username": null,
+        "referral_code": null,
+        "referral_count": 0,
+        "tier_access": 1,
+        "created_at": "2023-12-15T17:38:42.035Z",
+        "date_joined": "2023-12-15T17:38:41.830Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.userprofile",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "test@test.co.uk"
+        ],
+        "dob": null,
+        "phyiscal_location": "",
+        "pronouns": "",
+        "avatar_id": 1,
+        "is_expat": false,
+        "is_parent": false,
+        "is_sports_traveler": false,
+        "is_festival_traveler": false,
+        "is_student": false,
+        "is_vip": false,
+        "is_company_of_interest": false,
+        "created_at": "2023-12-15T17:38:42.039Z",
+        "updated_at": "2023-12-15T17:38:42.186Z"
+    }
+},
+{
+    "model": "floaters.floater",
+    "pk": 1,
+    "fields": {
+        "display_name": "Fancy",
+        "display_description": "Shes a badd bitch",
+        "display_order": 1,
+        "short_description": "Swan float",
+        "tier": "BD",
+        "avatar_icon_1x": "",
+        "avatar_icon_2x": "",
+        "avatar_hero_1x": "",
+        "avatar_hero_2x": "",
+        "avatar_badge_1x": "",
+        "avatar_badge_2x": ""
+    }
+},
+{
+    "model": "floaters.floater",
+    "pk": 2,
+    "fields": {
+        "display_name": "Bob from Accounting",
+        "display_description": "He gets down on the weekends",
+        "display_order": 2,
+        "short_description": "scuba diver",
+        "tier": "ST",
+        "avatar_icon_1x": "",
+        "avatar_icon_2x": "",
+        "avatar_hero_1x": "",
+        "avatar_hero_2x": "",
+        "avatar_badge_1x": "",
+        "avatar_badge_2x": ""
+    }
+},
+{
+    "model": "floaters.floater",
+    "pk": 3,
+    "fields": {
+        "display_name": "Gertrude",
+        "display_description": "Something ballsy",
+        "display_order": 3,
+        "short_description": "a bullet train",
+        "tier": "GD",
+        "avatar_icon_1x": "",
+        "avatar_icon_2x": "",
+        "avatar_hero_1x": "",
+        "avatar_hero_2x": "",
+        "avatar_badge_1x": "",
+        "avatar_badge_2x": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 1,
+    "fields": {
+        "action_time": "2023-11-28T17:27:29.325Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "object_id": "2",
+        "object_repr": "test@tes.com",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 2,
+    "fields": {
+        "action_time": "2023-11-28T17:28:04.203Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "object_id": "2",
+        "object_repr": "test@tes.com",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Email address\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 3,
+    "fields": {
+        "action_time": "2023-11-28T17:28:22.580Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "object_id": "2",
+        "object_repr": "test@tes.com",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Email address\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 4,
+    "fields": {
+        "action_time": "2023-11-28T20:54:03.050Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "object_id": "1",
+        "object_repr": "Floaters object (1)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 5,
+    "fields": {
+        "action_time": "2023-11-28T21:45:04.443Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "object_id": "3",
+        "object_repr": "thomas",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 6,
+    "fields": {
+        "action_time": "2023-11-28T21:52:00.506Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "object_id": "2",
+        "object_repr": "Floater object (2)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 7,
+    "fields": {
+        "action_time": "2023-11-28T21:52:19.446Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "object_id": "3",
+        "object_repr": "thomas",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Floater\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 8,
+    "fields": {
+        "action_time": "2023-11-28T22:09:17.680Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "floaters",
+            "floater"
+        ],
+        "object_id": "3",
+        "object_repr": "Gertrude",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 9,
+    "fields": {
+        "action_time": "2023-11-29T18:09:02.096Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "object_id": "2",
+        "object_repr": "test@tester.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 10,
+    "fields": {
+        "action_time": "2023-11-29T18:09:02.100Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "users",
+            "user"
+        ],
+        "object_id": "3",
+        "object_repr": "",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 11,
+    "fields": {
+        "action_time": "2023-12-12T02:15:40.157Z",
+        "user": [
+            "jamal@example.com"
+        ],
+        "content_type": [
+            "gradients",
+            "gradient"
+        ],
+        "object_id": "1",
+        "object_repr": "Prime",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+}
+]

@@ -8,7 +8,6 @@ import re
 
 User = get_user_model()
 
-
 class BadgeTestCase(TestCase):
     def setUp(self):
         # Set up any pre-requisites for the Badge tests

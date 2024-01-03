@@ -29,6 +29,7 @@ faker = "*"
 pytest-mock = "*"
 django-countries = "*"
 celery = "*"
+pytz = "*"
 
 [dev-packages]
 
